@@ -40,7 +40,7 @@ export function DungeonMap({
   const width = gridW * 100 * scale + padding * 2;
   const height = gridH * 100 * scale + padding * 2;
 
-  // Offset to center the dungeon within the (possibly expanded) viewBox
+  // Center the dungeon within the (possibly expanded) viewBox
   const extraX = (gridW - actualGridW) * 100 * scale / 2;
   const extraY = (gridH - actualGridH) * 100 * scale / 2;
   const offsetX = -bounds.minX * 100 * scale + padding + extraX;
