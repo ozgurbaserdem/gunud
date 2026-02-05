@@ -44,27 +44,38 @@ export function Game() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="border-b border-[#4a4a6a]">
-        <div className="flex items-center justify-between max-w-md mx-auto px-4 py-3">
+      <header className="border-b border-[#4a4a6a]/40">
+        <div className="flex items-center justify-between max-w-md mx-auto px-4 py-4">
           <button
             onClick={() => setShowHowToPlay(true)}
-            className="text-xl hover:scale-110 transition-transform w-8"
+            className="w-8 h-8 flex items-center justify-center rounded border border-[#4a4a6a] text-sm text-[#a0a0b0] hover:text-[#ffd700] hover:border-[#ffd700]/60 transition-colors"
             title="How to Play"
           >
-            ❓
+            ?
           </button>
 
           <div className="text-center">
-            <h1 className="text-xl sm:text-2xl font-bold text-[#ffd700]">⛏️ Gunud ⛏️</h1>
-            <p className="text-xs text-[#a0a0b0]">Puzzle #{puzzleNumber}</p>
+            <h1
+              className="text-2xl font-bold text-[#ffd700] tracking-[0.15em]"
+              style={{ textShadow: '0 0 24px rgba(255,215,0,0.25)' }}
+            >
+              GUNUD
+            </h1>
+            <p className="text-[10px] text-[#6a6a8a] tracking-[0.25em] mt-0.5">
+              PUZZLE #{puzzleNumber}
+            </p>
           </div>
 
           <button
             onClick={() => setShowStats(true)}
-            className="text-xl hover:scale-110 transition-transform w-8"
+            className="w-8 h-8 flex items-center justify-center rounded border border-[#4a4a6a] text-[#a0a0b0] hover:text-[#ffd700] hover:border-[#ffd700]/60 transition-colors"
             title="Statistics"
           >
-            📊
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <rect x="1" y="8" width="3" height="5" rx="0.5" />
+              <rect x="5.5" y="4" width="3" height="9" rx="0.5" />
+              <rect x="10" y="1" width="3" height="12" rx="0.5" />
+            </svg>
           </button>
         </div>
       </header>
