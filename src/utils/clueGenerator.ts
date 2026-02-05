@@ -39,7 +39,7 @@ export function generateClues(dungeon: Dungeon, dateString: string): Map<number,
     lastClues = new Map<number, Clue>();
     for (const room of clueRooms) {
       const category = assignments.get(room.id)!;
-      lastClues.set(room.id, buildClue(category, room, treasureRoom, distFromEntrance, distFromTreasure, random));
+      lastClues.set(room.id, buildClue(category, room, treasureRoom, distFromTreasure, random));
     }
 
     // Check solvability: all clues combined must uniquely identify treasure
@@ -116,7 +116,6 @@ function buildClue(
   category: ClueCategory,
   room: Room,
   treasureRoom: Room,
-  distFromEntrance: Map<number, number>,
   distFromTreasure: Map<number, number>,
   random: () => number
 ): Clue {
