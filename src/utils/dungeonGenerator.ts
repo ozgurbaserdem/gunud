@@ -104,7 +104,7 @@ function ensureLoops(rooms: Room[], _random: () => number, minLoops: number): vo
 
 // Check if two rooms are grid-adjacent (Manhattan distance 1 or 2)
 // Distance 2 allowed only for diagonal connections (different x AND y)
-function areGridAdjacent(room1: Room, room2: Room): boolean {
+export function areGridAdjacent(room1: Room, room2: Room): boolean {
   const dx = Math.abs(room1.x - room2.x);
   const dy = Math.abs(room1.y - room2.y);
   const dist = dx + dy;
@@ -317,52 +317,86 @@ export function generateDungeon(dateString: string): Dungeon {
   // Determine room count (10-14 to ensure enough distance for treasure)
   const roomCount = Math.floor(random() * 5) + 10;
 
-  // Generate room positions in a grid-like layout (larger grid for more spread)
+  // Generate rooms using growth algorithm - each new room is adjacent to existing
+  // This guarantees all connections are grid-adjacent
   const rooms: Room[] = [];
-  const gridSize = Math.ceil(Math.sqrt(roomCount * 3));
   const usedPositions = new Set<string>();
 
-  for (let i = 0; i < roomCount; i++) {
-    let x: number, y: number;
+  // Start with room 0 at origin
+  rooms.push({ id: 0, x: 0, y: 0, connections: [] });
+  usedPositions.add('0,0');
+
+  // Adjacent offsets (4 cardinal directions)
+  const adjacentOffsets = [
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0],
+  ];
+
+  // Grow dungeon by adding rooms adjacent to existing ones
+  for (let i = 1; i < roomCount; i++) {
+    let placed = false;
     let attempts = 0;
+    const maxAttempts = 100;
 
-    do {
-      x = Math.floor(random() * gridSize);
-      y = Math.floor(random() * gridSize);
+    while (!placed && attempts < maxAttempts) {
       attempts++;
-    } while (usedPositions.has(`${x},${y}`) && attempts < 100);
 
-    usedPositions.add(`${x},${y}`);
-    rooms.push({ id: i, x, y, connections: [] });
-  }
+      // Pick a random existing room to grow from
+      const parentRoom = rooms[Math.floor(random() * rooms.length)];
 
-  // Connect rooms to form a connected graph
-  // First, create a minimum spanning tree using Prim's algorithm
-  const inTree = new Set<number>([0]);
-  const edges: Array<{ from: number; to: number; dist: number }> = [];
+      // Shuffle adjacent positions for variety
+      const shuffledOffsets = [...adjacentOffsets].sort(() => random() - 0.5);
 
-  while (inTree.size < roomCount) {
-    let bestEdge: { from: number; to: number; dist: number } | null = null;
+      for (const [dx, dy] of shuffledOffsets) {
+        const newX = parentRoom.x + dx;
+        const newY = parentRoom.y + dy;
+        const posKey = `${newX},${newY}`;
 
-    for (const fromId of inTree) {
-      for (let toId = 0; toId < roomCount; toId++) {
-        if (inTree.has(toId)) continue;
+        if (!usedPositions.has(posKey)) {
+          // Create new room and connect to parent
+          const newRoom: Room = {
+            id: i,
+            x: newX,
+            y: newY,
+            connections: [parentRoom.id],
+          };
+          parentRoom.connections.push(i);
 
-        const from = rooms[fromId];
-        const to = rooms[toId];
-        const dist = Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
-
-        if (!bestEdge || dist < bestEdge.dist) {
-          bestEdge = { from: fromId, to: toId, dist };
+          rooms.push(newRoom);
+          usedPositions.add(posKey);
+          placed = true;
+          break;
         }
       }
     }
 
-    if (bestEdge) {
-      edges.push(bestEdge);
-      inTree.add(bestEdge.to);
-      rooms[bestEdge.from].connections.push(bestEdge.to);
-      rooms[bestEdge.to].connections.push(bestEdge.from);
+    // Fallback: if we couldn't place adjacent, find any empty adjacent spot
+    if (!placed) {
+      for (const room of rooms) {
+        for (const [dx, dy] of adjacentOffsets) {
+          const newX = room.x + dx;
+          const newY = room.y + dy;
+          const posKey = `${newX},${newY}`;
+
+          if (!usedPositions.has(posKey)) {
+            const newRoom: Room = {
+              id: i,
+              x: newX,
+              y: newY,
+              connections: [room.id],
+            };
+            room.connections.push(i);
+
+            rooms.push(newRoom);
+            usedPositions.add(posKey);
+            placed = true;
+            break;
+          }
+        }
+        if (placed) break;
+      }
     }
   }
 
