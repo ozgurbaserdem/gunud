@@ -45,9 +45,9 @@ export function HowToPlay({ isOpen, onClose }: HowToPlayProps) {
           </div>
 
           <div className="flex items-start gap-3">
-            <span className="text-2xl">💎</span>
+            <span className="text-2xl">🏺</span>
             <div>
-              <p className="font-bold">Find the Treasure</p>
+              <p className="font-bold">Find the Relic</p>
               <p className="text-sm text-[#a0a0b0]">
                 Navigate to the room you've deduced. Fewer moves = better rating!
               </p>

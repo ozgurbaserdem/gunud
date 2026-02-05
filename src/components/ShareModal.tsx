@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Dungeon } from '../types';
-import { generateShareText, copyToClipboard, getEchoRating } from '../utils/sharing';
+import { generateShareText, copyToClipboard, getDelveRating } from '../utils/sharing';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -10,7 +10,7 @@ interface ShareModalProps {
   par: number;
   visitedRoomIds: Set<number>;
   dungeon: Dungeon;
-  echoCount: number;
+  clueCount: number;
 }
 
 const GRADE_COLORS: Record<string, string> = {
@@ -48,7 +48,7 @@ function getContextMessage(grade: string, moves: number, par: number): string | 
     case 'S': return null;
     case 'A': return 'Perfect navigation.';
     case 'B': return `So close! Just ${diff} step${diff > 1 ? 's' : ''} off.`;
-    case 'C': return 'The echoes faded...';
+    case 'C': return 'A rough descent...';
     case 'D': return 'Lost in the dark.';
     default: return null;
   }
@@ -62,11 +62,11 @@ export function ShareModal({
   par,
   visitedRoomIds,
   dungeon,
-  echoCount,
+  clueCount,
 }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
 
-  const rating = getEchoRating(moves, par);
+  const rating = getDelveRating(moves, par);
   const confettiConfig = CONFETTI_CONFIG[rating.grade];
 
   // Manage confetti phase with a single state driven by CSS animation timing
@@ -94,7 +94,7 @@ export function ShareModal({
   if (!isOpen) return null;
 
   const { text, emojiGrid } = generateShareText(
-    puzzleNumber, moves, par, visitedRoomIds, dungeon, echoCount
+    puzzleNumber, moves, par, visitedRoomIds, dungeon, clueCount
   );
 
   const handleShare = async () => {
@@ -108,7 +108,7 @@ export function ShareModal({
   const gradeColor = GRADE_COLORS[rating.grade];
   const gradeShadow = GRADE_SHADOWS[rating.grade] || 'none';
   const contextMessage = getContextMessage(rating.grade, moves, par);
-  const echoesHighlight = echoCount <= moves;
+  const cluesHighlight = clueCount <= moves;
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -167,8 +167,8 @@ export function ShareModal({
           <div className="w-px h-10 bg-[#4a4a6a]" />
           <div className="text-center">
             <p className="text-xs text-[#a0a0b0] uppercase">Clues</p>
-            <p className={`text-2xl font-bold ${echoesHighlight ? 'text-[#ffd700]' : 'text-[#a0a0b0]'}`}>
-              {echoCount}
+            <p className={`text-2xl font-bold ${cluesHighlight ? 'text-[#ffd700]' : 'text-[#a0a0b0]'}`}>
+              {clueCount}
             </p>
           </div>
         </div>

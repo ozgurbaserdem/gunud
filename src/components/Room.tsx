@@ -90,7 +90,7 @@ export function Room({
         <g clipPath={`url(#${clipId})`}>
           {isTreasure && isCurrent ? (
             <text x={0} y={8} textAnchor="middle" fontSize={32 * scale} fill="#ffd700" className="torch-glow">
-              💎
+              🏺
             </text>
           ) : isCurrent && clue ? (
             <>

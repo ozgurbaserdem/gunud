@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { Stats, RatingCounts } from '../types';
 import { getTodayDateString } from '../utils/dungeonGenerator';
-import { getEchoRating } from '../utils/sharing';
+import { getDelveRating } from '../utils/sharing';
 
-const STATS_KEY = 'dungeon-echo-stats';
+const STATS_KEY = 'delve-stats';
 
 const DEFAULT_RATING_COUNTS: RatingCounts = { S: 0, A: 0, B: 0, C: 0, D: 0 };
 
@@ -72,7 +72,7 @@ export function useStats(): UseStatsReturn {
         const isConsecutive = prev.lastPlayedDate === yesterdayString;
         const newStreak = isConsecutive ? prev.currentStreak + 1 : 1;
 
-        const rating = getEchoRating(moves, par);
+        const rating = getDelveRating(moves, par);
         const prevCounts = prev.ratingCounts || { S: 0, A: 0, B: 0, C: 0, D: 0 };
         const newRatingCounts: RatingCounts = {
           ...prevCounts,

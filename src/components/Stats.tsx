@@ -45,8 +45,8 @@ export function Stats({ isOpen, onClose, stats, averageMoves }: StatsProps) {
           </div>
         )}
 
-        {/* Echo Ratings Distribution */}
-        <p className="text-[#a0a0b0] text-sm mb-2 text-center">Echo Ratings</p>
+        {/* Delve Ratings Distribution */}
+        <p className="text-[#a0a0b0] text-sm mb-2 text-center">Delve Ratings</p>
         <div className="bg-[#1a1a2e] rounded p-4 mb-6">
           {hasAnyRatings ? (
             GRADES.map((grade) => {

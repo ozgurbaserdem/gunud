@@ -19,10 +19,10 @@ export function Game() {
 
   // Show how to play on first visit
   useEffect(() => {
-    const hasSeenTutorial = localStorage.getItem('dungeon-echo-tutorial-seen');
+    const hasSeenTutorial = localStorage.getItem('delve-tutorial-seen');
     if (!hasSeenTutorial) {
       setShowHowToPlay(true);
-      localStorage.setItem('dungeon-echo-tutorial-seen', 'true');
+      localStorage.setItem('delve-tutorial-seen', 'true');
     }
   }, []);
 
@@ -54,7 +54,7 @@ export function Game() {
         </button>
 
         <div className="text-center">
-          <h1 className="text-xl sm:text-2xl font-bold text-[#ffd700]">🏰 Dungeon Echo</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#ffd700]">⛏️ Delve</h1>
           <p className="text-xs text-[#a0a0b0]">Puzzle #{puzzleNumber}</p>
         </div>
 
@@ -80,7 +80,7 @@ export function Game() {
         <div className="mt-6 text-center">
           {gameState.hasWon ? (
             <div>
-              <p className="text-2xl font-bold text-[#ffd700] mb-2 win-text-reveal">💎 Treasure Found!</p>
+              <p className="text-2xl font-bold text-[#ffd700] mb-2 win-text-reveal">🏺 Relic Found!</p>
               <button
                 onClick={() => setShowShareModal(true)}
                 className="bg-[#ffd700] text-[#1a1a2e] px-6 py-2 rounded font-bold hover:bg-[#ffed4a] transition-colors win-button-reveal"
@@ -115,7 +115,7 @@ export function Game() {
                 </p>
               )}
 
-              <p className="text-sm text-[#a0a0b0]">Collect clues to find the treasure</p>
+              <p className="text-sm text-[#a0a0b0]">Collect clues to find the relic</p>
             </>
           )}
         </div>
@@ -123,7 +123,7 @@ export function Game() {
 
       {/* Footer */}
       <footer className="p-4 text-center text-xs text-[#6a6a8a]">
-        <p>Triangulate your way to treasure</p>
+        <p>Delve deeper, think smarter</p>
       </footer>
 
       {/* Modals */}
@@ -135,7 +135,7 @@ export function Game() {
         par={par}
         visitedRoomIds={gameState.visitedRoomIds}
         dungeon={gameState.dungeon}
-        echoCount={gameState.visitedRoomIds.size}
+        clueCount={gameState.visitedRoomIds.size}
       />
 
       <HowToPlay isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />

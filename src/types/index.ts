@@ -29,7 +29,7 @@ export interface GameState {
   clues: Map<number, Clue>; // roomId -> clue
 }
 
-export interface EchoRating {
+export interface DelveRating {
   grade: 'S' | 'A' | 'B' | 'C' | 'D';
   name: string;
   emoji: string;

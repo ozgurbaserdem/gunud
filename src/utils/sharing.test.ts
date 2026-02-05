@@ -1,56 +1,56 @@
 import { describe, it, expect } from 'vitest';
-import { getEchoRating, generateShareText } from './sharing';
+import { getDelveRating, generateShareText } from './sharing';
 import type { Dungeon } from '../types';
 
-describe('getEchoRating', () => {
+describe('getDelveRating', () => {
   describe('grade boundaries', () => {
     it('returns S grade when moves < par (under par)', () => {
-      const rating = getEchoRating(3, 5);
+      const rating = getDelveRating(3, 5);
       expect(rating.grade).toBe('S');
       expect(rating.name).toBe('Silent Steps');
     });
 
     it('returns S grade when 1 under par', () => {
-      const rating = getEchoRating(4, 5);
+      const rating = getDelveRating(4, 5);
       expect(rating.grade).toBe('S');
     });
 
     it('returns A grade when moves === par (exactly par)', () => {
-      const rating = getEchoRating(5, 5);
+      const rating = getDelveRating(5, 5);
       expect(rating.grade).toBe('A');
-      expect(rating.name).toBe('Sharp Echo');
+      expect(rating.name).toBe('Swift Delve');
     });
 
     it('returns B grade when 1 over par', () => {
-      const rating = getEchoRating(6, 5);
+      const rating = getDelveRating(6, 5);
       expect(rating.grade).toBe('B');
-      expect(rating.name).toBe('Clear Echo');
+      expect(rating.name).toBe('Steady Delve');
     });
 
     it('returns B grade when 2 over par', () => {
-      const rating = getEchoRating(7, 5);
+      const rating = getDelveRating(7, 5);
       expect(rating.grade).toBe('B');
     });
 
     it('returns C grade when 3 over par', () => {
-      const rating = getEchoRating(8, 5);
+      const rating = getDelveRating(8, 5);
       expect(rating.grade).toBe('C');
-      expect(rating.name).toBe('Fading Echo');
+      expect(rating.name).toBe('Rough Delve');
     });
 
     it('returns C grade when 4 over par', () => {
-      const rating = getEchoRating(9, 5);
+      const rating = getDelveRating(9, 5);
       expect(rating.grade).toBe('C');
     });
 
     it('returns D grade when 5 over par', () => {
-      const rating = getEchoRating(10, 5);
+      const rating = getDelveRating(10, 5);
       expect(rating.grade).toBe('D');
-      expect(rating.name).toBe('Lost Echo');
+      expect(rating.name).toBe('Lost Delver');
     });
 
     it('returns D grade when far over par', () => {
-      const rating = getEchoRating(20, 5);
+      const rating = getDelveRating(20, 5);
       expect(rating.grade).toBe('D');
     });
   });
@@ -60,7 +60,7 @@ describe('getEchoRating', () => {
       const pars = [4, 5, 6];
       for (const par of pars) {
         for (let moves = 1; moves <= par + 10; moves++) {
-          const rating = getEchoRating(moves, par);
+          const rating = getDelveRating(moves, par);
           expect(rating.name.length).toBeGreaterThan(0);
         }
       }
@@ -70,7 +70,7 @@ describe('getEchoRating', () => {
       const pars = [4, 5, 6];
       for (const par of pars) {
         for (let moves = 1; moves <= par + 10; moves++) {
-          const rating = getEchoRating(moves, par);
+          const rating = getDelveRating(moves, par);
           expect(rating.emoji.length).toBeGreaterThan(0);
         }
       }
@@ -79,7 +79,7 @@ describe('getEchoRating', () => {
     it('grade is one of S, A, B, C, D', () => {
       const validGrades = ['S', 'A', 'B', 'C', 'D'];
       for (let moves = 1; moves <= 20; moves++) {
-        const rating = getEchoRating(moves, 5);
+        const rating = getDelveRating(moves, 5);
         expect(validGrades).toContain(rating.grade);
       }
     });
@@ -87,23 +87,23 @@ describe('getEchoRating', () => {
 
   describe('with typical par values (4-6)', () => {
     it('par 4: 3 moves = S, 4 = A, 5-6 = B, 7-8 = C, 9+ = D', () => {
-      expect(getEchoRating(3, 4).grade).toBe('S');
-      expect(getEchoRating(4, 4).grade).toBe('A');
-      expect(getEchoRating(5, 4).grade).toBe('B');
-      expect(getEchoRating(6, 4).grade).toBe('B');
-      expect(getEchoRating(7, 4).grade).toBe('C');
-      expect(getEchoRating(8, 4).grade).toBe('C');
-      expect(getEchoRating(9, 4).grade).toBe('D');
+      expect(getDelveRating(3, 4).grade).toBe('S');
+      expect(getDelveRating(4, 4).grade).toBe('A');
+      expect(getDelveRating(5, 4).grade).toBe('B');
+      expect(getDelveRating(6, 4).grade).toBe('B');
+      expect(getDelveRating(7, 4).grade).toBe('C');
+      expect(getDelveRating(8, 4).grade).toBe('C');
+      expect(getDelveRating(9, 4).grade).toBe('D');
     });
 
     it('par 6: 5 moves = S, 6 = A, 7-8 = B, 9-10 = C, 11+ = D', () => {
-      expect(getEchoRating(5, 6).grade).toBe('S');
-      expect(getEchoRating(6, 6).grade).toBe('A');
-      expect(getEchoRating(7, 6).grade).toBe('B');
-      expect(getEchoRating(8, 6).grade).toBe('B');
-      expect(getEchoRating(9, 6).grade).toBe('C');
-      expect(getEchoRating(10, 6).grade).toBe('C');
-      expect(getEchoRating(11, 6).grade).toBe('D');
+      expect(getDelveRating(5, 6).grade).toBe('S');
+      expect(getDelveRating(6, 6).grade).toBe('A');
+      expect(getDelveRating(7, 6).grade).toBe('B');
+      expect(getDelveRating(8, 6).grade).toBe('B');
+      expect(getDelveRating(9, 6).grade).toBe('C');
+      expect(getDelveRating(10, 6).grade).toBe('C');
+      expect(getDelveRating(11, 6).grade).toBe('D');
     });
   });
 });
@@ -123,12 +123,12 @@ describe('generateShareText', () => {
 
   it('includes puzzle number in header', () => {
     const result = generateShareText(42, 5, 5, new Set([0, 1, 2, 3]), testDungeon);
-    expect(result.text).toContain('Dungeon Echo #42');
+    expect(result.text).toContain('Delve #42');
   });
 
   it('includes rating line with grade and name', () => {
     const result = generateShareText(42, 5, 5, new Set([0, 1, 2, 3]), testDungeon);
-    expect(result.text).toContain('Rating: A - Sharp Echo');
+    expect(result.text).toContain('Rating: A - Swift Delve');
   });
 
   it('includes moves and par in stats line', () => {
@@ -136,13 +136,13 @@ describe('generateShareText', () => {
     expect(result.text).toContain('5 moves (Par: 5)');
   });
 
-  it('includes echo count from visitedRoomIds.size when echoCount not provided', () => {
+  it('includes clue count from visitedRoomIds.size when clueCount not provided', () => {
     const visited = new Set([0, 1, 2, 3]);
     const result = generateShareText(42, 5, 5, visited, testDungeon);
     expect(result.text).toContain('Clues: 4');
   });
 
-  it('uses explicit echoCount when provided', () => {
+  it('uses explicit clueCount when provided', () => {
     const visited = new Set([0, 1, 2, 3]);
     const result = generateShareText(42, 5, 5, visited, testDungeon, 7);
     expect(result.text).toContain('Clues: 7');
@@ -150,7 +150,7 @@ describe('generateShareText', () => {
 
   it('includes site URL', () => {
     const result = generateShareText(42, 5, 5, new Set([0, 1, 2, 3]), testDungeon);
-    expect(result.text).toContain('dungeonecho.game');
+    expect(result.text).toContain('playdelve.game');
   });
 
   it('includes emoji grid in output', () => {
@@ -186,7 +186,7 @@ describe('generateShareText', () => {
     });
   });
 
-  describe('rating in share text matches getEchoRating', () => {
+  describe('rating in share text matches getDelveRating', () => {
     it('S-rank text when under par', () => {
       const result = generateShareText(1, 3, 5, new Set([0, 1, 2, 3]), testDungeon);
       expect(result.text).toContain('Rating: S - Silent Steps');
@@ -194,12 +194,12 @@ describe('generateShareText', () => {
 
     it('B-rank text when 1-2 over par', () => {
       const result = generateShareText(1, 6, 5, new Set([0, 1, 2, 3]), testDungeon);
-      expect(result.text).toContain('Rating: B - Clear Echo');
+      expect(result.text).toContain('Rating: B - Steady Delve');
     });
 
     it('D-rank text when far over par', () => {
       const result = generateShareText(1, 15, 5, new Set([0, 1, 2, 3]), testDungeon);
-      expect(result.text).toContain('Rating: D - Lost Echo');
+      expect(result.text).toContain('Rating: D - Lost Delver');
     });
   });
 });

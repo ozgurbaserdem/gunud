@@ -1,17 +1,17 @@
-import type { Dungeon, EchoRating } from '../types';
+import type { Dungeon, DelveRating } from '../types';
 
 export interface ShareResult {
   text: string;
   emojiGrid: string;
 }
 
-export function getEchoRating(moves: number, par: number): EchoRating {
+export function getDelveRating(moves: number, par: number): DelveRating {
   const diff = moves - par;
   if (diff < 0) return { grade: 'S', name: 'Silent Steps', emoji: '\u2728' };
-  if (diff === 0) return { grade: 'A', name: 'Sharp Echo', emoji: '\u26A1' };
-  if (diff <= 2) return { grade: 'B', name: 'Clear Echo', emoji: '\uD83D\uDD2E' };
-  if (diff <= 4) return { grade: 'C', name: 'Fading Echo', emoji: '\uD83D\uDD6F\uFE0F' };
-  return { grade: 'D', name: 'Lost Echo', emoji: '\uD83D\uDC80' };
+  if (diff === 0) return { grade: 'A', name: 'Swift Delve', emoji: '\u26A1' };
+  if (diff <= 2) return { grade: 'B', name: 'Steady Delve', emoji: '\uD83D\uDD2E' };
+  if (diff <= 4) return { grade: 'C', name: 'Rough Delve', emoji: '\uD83D\uDD6F\uFE0F' };
+  return { grade: 'D', name: 'Lost Delver', emoji: '\uD83D\uDC80' };
 }
 
 // Generate share text with emoji grid
@@ -21,20 +21,20 @@ export function generateShareText(
   par: number,
   visitedRoomIds: Set<number>,
   dungeon: Dungeon,
-  echoCount?: number
+  clueCount?: number
 ): ShareResult {
   const emojiGrid = generateEmojiGrid(dungeon, visitedRoomIds);
-  const rating = getEchoRating(moves, par);
-  const echoes = echoCount ?? visitedRoomIds.size;
+  const rating = getDelveRating(moves, par);
+  const clues = clueCount ?? visitedRoomIds.size;
 
-  const text = `Dungeon Echo #${puzzleNumber}
+  const text = `Delve #${puzzleNumber}
 
 ${emojiGrid}
 
 Rating: ${rating.grade} - ${rating.name} ${rating.emoji}
-${moves} moves (Par: ${par}) | Clues: ${echoes}
+${moves} moves (Par: ${par}) | Clues: ${clues}
 
-dungeonecho.game`;
+playdelve.game`;
 
   return { text, emojiGrid };
 }
@@ -62,7 +62,7 @@ function generateEmojiGrid(dungeon: Dungeon, visitedRoomIds: Set<number>): strin
     const y = room.y - minY;
 
     if (room.id === treasureId) {
-      grid[y][x] = '🟩'; // Treasure room
+      grid[y][x] = '🟩'; // Relic room
     } else if (room.id === entranceId) {
       grid[y][x] = '🚪'; // Entrance
     } else if (visitedRoomIds.has(room.id)) {
