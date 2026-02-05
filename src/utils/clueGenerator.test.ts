@@ -1,43 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { generateClues } from './clueGenerator';
+import { generateClues, roomMatchesClue } from './clueGenerator';
 import { generateDungeon, calculateDistances } from './dungeonGenerator';
-import type { ClueCategory, Clue, Room } from '../types';
-
-// Helper: check if a candidate room matches a clue
-function roomMatchesClue(
-  candidate: Room,
-  clue: Clue,
-  clueRoom: Room,
-  distFromEntrance: Map<number, number>
-): boolean {
-  switch (clue.category) {
-    case 'connection': {
-      const n = parseInt(clue.compact);
-      return candidate.connections.length === n;
-    }
-    case 'spatial': {
-      const dx = candidate.x - clueRoom.x;
-      const dy = candidate.y - clueRoom.y;
-      if (clue.compact.includes('Right')) return dx > 0;
-      if (clue.compact.includes('Left')) return dx < 0;
-      if (clue.compact.includes('Below')) return dy > 0;
-      if (clue.compact.includes('Above')) return dy < 0;
-      if (clue.compact.includes('Same col')) return dx === 0;
-      if (clue.compact.includes('Same row')) return dy === 0;
-      return true;
-    }
-    case 'relational': {
-      const isAdj = clueRoom.connections.includes(candidate.id);
-      return clue.compact === 'Adjacent!' ? isAdj : !isAdj;
-    }
-    case 'entrance': {
-      const d = parseInt(clue.compact);
-      return distFromEntrance.get(candidate.id) === d;
-    }
-    default:
-      return true;
-  }
-}
+import type { ClueCategory } from '../types';
 
 describe('generateClues', () => {
   const dateString = '2026-02-05';

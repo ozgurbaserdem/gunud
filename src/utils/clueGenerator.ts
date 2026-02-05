@@ -17,6 +17,8 @@ export function generateClues(dungeon: Dungeon, dateString: string): Map<number,
 
   // Retry loop: reshuffle assignments until clues uniquely identify treasure
   const maxAttempts = 10;
+  let lastClues: Map<number, Clue> = new Map();
+
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const assignments = new Map<number, ClueCategory>();
 
@@ -33,35 +35,20 @@ export function generateClues(dungeon: Dungeon, dateString: string): Map<number,
     }
 
     // Generate clue content for each room
-    const clues = new Map<number, Clue>();
+    lastClues = new Map<number, Clue>();
     for (const room of clueRooms) {
       const category = assignments.get(room.id)!;
-      clues.set(room.id, buildClue(category, room, treasureRoom, distFromEntrance, random));
+      lastClues.set(room.id, buildClue(category, room, treasureRoom, distFromEntrance, random));
     }
 
     // Check solvability: all clues combined must uniquely identify treasure
-    if (isSolvable(clues, rooms, treasureId, distFromEntrance)) {
-      return clues;
+    if (isSolvable(lastClues, rooms, treasureId, distFromEntrance)) {
+      return lastClues;
     }
   }
 
-  // Fallback: return last attempt's clues even if not perfectly solvable
-  // (This shouldn't happen with 10 attempts, but safety net)
-  const assignments = new Map<number, ClueCategory>();
-  const guaranteed = clueRooms.slice(0, 4);
-  const shuffledCats = [...categories].sort(() => random() - 0.5);
-  for (let i = 0; i < guaranteed.length; i++) {
-    assignments.set(guaranteed[i].id, shuffledCats[i]);
-  }
-  for (const room of clueRooms.slice(4)) {
-    assignments.set(room.id, categories[Math.floor(random() * categories.length)]);
-  }
-  const clues = new Map<number, Clue>();
-  for (const room of clueRooms) {
-    const category = assignments.get(room.id)!;
-    clues.set(room.id, buildClue(category, room, treasureRoom, distFromEntrance, random));
-  }
-  return clues;
+  // Return last attempt even if not perfectly solvable (safety net)
+  return lastClues;
 }
 
 function isSolvable(
@@ -83,7 +70,7 @@ function isSolvable(
   return candidates.length === 1 && candidates[0] === treasureId;
 }
 
-function roomMatchesClue(
+export function roomMatchesClue(
   candidate: Room,
   clue: Clue,
   clueRoom: Room,
