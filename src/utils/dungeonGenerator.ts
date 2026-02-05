@@ -99,6 +99,100 @@ function ensureLoops(rooms: Room[], _random: () => number, minLoops: number): vo
   }
 }
 
+// Get max distance from entrance to any room
+function getMaxDistance(rooms: Room[], entranceId: number): number {
+  const distances = calculateDistances(rooms, entranceId);
+  let maxDist = 0;
+  for (const dist of distances.values()) {
+    if (dist > maxDist) maxDist = dist;
+  }
+  return maxDist;
+}
+
+// Check if graph stays connected after removing an edge
+function isConnectedWithoutEdge(
+  rooms: Room[],
+  room1Id: number,
+  room2Id: number
+): boolean {
+  // Temporarily remove the edge
+  const room1 = rooms.find((r) => r.id === room1Id)!;
+  const room2 = rooms.find((r) => r.id === room2Id)!;
+
+  const idx1 = room1.connections.indexOf(room2Id);
+  const idx2 = room2.connections.indexOf(room1Id);
+
+  if (idx1 === -1 || idx2 === -1) return true; // Edge doesn't exist
+
+  room1.connections.splice(idx1, 1);
+  room2.connections.splice(idx2, 1);
+
+  // BFS to check connectivity
+  const visited = new Set<number>();
+  const queue = [rooms[0].id];
+  visited.add(rooms[0].id);
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    const currentRoom = rooms.find((r) => r.id === current)!;
+    for (const neighborId of currentRoom.connections) {
+      if (!visited.has(neighborId)) {
+        visited.add(neighborId);
+        queue.push(neighborId);
+      }
+    }
+  }
+
+  const isConnected = visited.size === rooms.length;
+
+  // Restore the edge
+  room1.connections.push(room2Id);
+  room2.connections.push(room1Id);
+
+  return isConnected;
+}
+
+// Ensure minimum distance by removing shortcut connections
+function ensureMinimumDistance(rooms: Room[], entranceId: number, minDist: number): void {
+  const maxAttempts = 20;
+  let attempts = 0;
+
+  while (getMaxDistance(rooms, entranceId) < minDist && attempts < maxAttempts) {
+    attempts++;
+
+    // Find a non-MST edge to remove (rooms with 2+ connections)
+    // Prioritize removing edges from rooms close to entrance (they create shortcuts)
+    const distances = calculateDistances(rooms, entranceId);
+    const roomsByDistance = [...rooms].sort((a, b) => {
+      const distA = distances.get(a.id) || 0;
+      const distB = distances.get(b.id) || 0;
+      return distA - distB;
+    });
+
+    let removed = false;
+    for (const room of roomsByDistance) {
+      if (room.connections.length <= 1) continue; // Keep at least 1 connection
+
+      for (const neighborId of [...room.connections]) {
+        const neighbor = rooms.find((r) => r.id === neighborId)!;
+        if (neighbor.connections.length <= 1) continue; // Neighbor needs connections too
+
+        // Check if removing this edge keeps graph connected
+        if (isConnectedWithoutEdge(rooms, room.id, neighborId)) {
+          // Remove the edge
+          room.connections = room.connections.filter((id) => id !== neighborId);
+          neighbor.connections = neighbor.connections.filter((id) => id !== room.id);
+          removed = true;
+          break;
+        }
+      }
+      if (removed) break;
+    }
+
+    if (!removed) break; // No more edges can be safely removed
+  }
+}
+
 // Add dead-end rooms that branch off the optimal path
 function addDeadEnds(
   rooms: Room[],
@@ -252,27 +346,38 @@ export function generateDungeon(dateString: string): Dungeon {
   // Entrance is room 0
   const entranceId = 0;
 
+  // Ensure minimum distance of 4 by removing connections if needed
+  ensureMinimumDistance(rooms, entranceId, 4);
+
   // Find treasure room: must be at least 4 rooms away from entrance (par 4+)
   const distances = calculateDistances(rooms, entranceId);
-  const validTreasureRooms = rooms.filter((r) => {
+
+  // Sort all rooms by distance (descending) - farthest first
+  const allRoomsSortedByDistance = [...rooms]
+    .filter((r) => r.id !== entranceId) // exclude entrance
+    .sort((a, b) => {
+      const distA = distances.get(a.id) || 0;
+      const distB = distances.get(b.id) || 0;
+      return distB - distA;
+    });
+
+  // Filter for rooms at least 4 steps away
+  const validTreasureRooms = allRoomsSortedByDistance.filter((r) => {
     const dist = distances.get(r.id);
     return dist !== undefined && dist >= 4;
   });
 
-  // Pick a random valid treasure room, preferring farther rooms
-  // Sort by distance (descending) and pick from the farther half
-  const sortedValidRooms = validTreasureRooms.sort((a, b) => {
-    const distA = distances.get(a.id) || 0;
-    const distB = distances.get(b.id) || 0;
-    return distB - distA;
-  });
+  let treasureRoom: Room;
 
-  // Pick from top half of farthest rooms for more challenge
-  const topHalf = sortedValidRooms.slice(0, Math.max(1, Math.ceil(sortedValidRooms.length / 2)));
-  const treasureRoom =
-    topHalf[Math.floor(random() * topHalf.length)] ||
-    sortedValidRooms[0] ||
-    rooms[rooms.length - 1];
+  if (validTreasureRooms.length > 0) {
+    // Pick from top half of farthest valid rooms for challenge
+    const topHalf = validTreasureRooms.slice(0, Math.max(1, Math.ceil(validTreasureRooms.length / 2)));
+    treasureRoom = topHalf[Math.floor(random() * topHalf.length)];
+  } else {
+    // Fallback: pick the farthest room available (even if < 4 steps)
+    // This ensures treasure is always as far as possible
+    treasureRoom = allRoomsSortedByDistance[0];
+  }
 
   // Add dead-end branches off the optimal path for misleading wrong turns
   addDeadEnds(rooms, entranceId, treasureRoom.id, random, usedPositions);
