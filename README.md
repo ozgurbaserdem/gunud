@@ -1,21 +1,22 @@
-# Dungeon Echo
+# Gunud
 
-A daily browser-based puzzle game where players explore a dungeon to find hidden treasure using distance hints.
+A daily browser-based puzzle game where players explore a dungeon to find a hidden relic using clues.
 
-**Tagline:** *"Triangulate your way to treasure"*
+**Tagline:** *"Delve deeper, think smarter"*
 
 ## How to Play
 
-1. **Enter the Dungeon** - You start at the entrance. Your current room shows a number.
-2. **Distance Hints** - The number shows how many rooms away the treasure is (via shortest path).
-3. **Navigate** - Click adjacent rooms to move. Only your current room reveals its distance!
-4. **Find the Treasure** - When you reach distance 0, you've found it! Try to match or beat par.
+1. **Enter the Dungeon** - You start at the entrance. Each room holds a clue about the relic.
+2. **Collect Clues** - Clues reveal properties of the relic room: exits, direction, adjacency, or distance from entrance.
+3. **Deduce** - Combine clues to eliminate rooms until only one fits.
+4. **Find the Relic** - Navigate to the room you've deduced. Fewer moves = better rating!
 5. **Daily Puzzle** - Same dungeon for everyone each day. Come back tomorrow for a new challenge!
 
 ## Features
 
 - Daily seeded puzzles (same for all players)
 - No backend required - runs entirely client-side
+- Letter grade ratings (S/A/B/C/D)
 - Stats tracking with streaks
 - Shareable results with emoji grid
 - Mobile responsive
@@ -43,15 +44,16 @@ npm run build
 ## Share Format
 
 ```
-🏰 Dungeon Echo #42
+Gunud #42
 
 ⬛⬛🟨⬛
 ⬛🟨🟨⬛
 ⬛⬛🟩⬛
 
-🏆 Found in 4 moves (Par: 5)
+Rating: A - Swift Delve ⚡
+4 moves (Par: 4) | Clues: 3
 
-dungeonecho.game
+gunud.vercel.app
 ```
 
 ## License
