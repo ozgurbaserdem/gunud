@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { CircleHelp, BarChart3 } from 'lucide-react';
 import { useGame } from '../hooks/useGame';
 import { useStats } from '../hooks/useStats';
 import { DungeonMap } from './DungeonMap';
@@ -13,33 +14,31 @@ export function Game() {
   const { stats, recordWin, hasPlayedToday, averageMoves } = useStats();
 
   const [showShareModal, setShowShareModal] = useState(false);
-  const [showHowToPlay, setShowHowToPlay] = useState(false);
-  const [showStats, setShowStats] = useState(false);
-  const [hasRecordedWin, setHasRecordedWin] = useState(false);
-
-  // Show how to play on first visit
-  useEffect(() => {
-    const hasSeenTutorial = localStorage.getItem('gunud-tutorial-seen');
-    if (!hasSeenTutorial) {
-      setShowHowToPlay(true);
+  const [showHowToPlay, setShowHowToPlay] = useState(() => {
+    const seen = localStorage.getItem('gunud-tutorial-seen');
+    if (!seen) {
       localStorage.setItem('gunud-tutorial-seen', 'true');
+      return true;
     }
-  }, []);
+    return false;
+  });
+  const [showStats, setShowStats] = useState(false);
+  const hasRecordedWin = useRef(false);
 
   // Handle win
   useEffect(() => {
-    if (gameState.hasWon && !hasRecordedWin) {
+    if (gameState.hasWon && !hasRecordedWin.current) {
       if (!hasPlayedToday) {
         recordWin(gameState.moveCount, par);
       }
-      setHasRecordedWin(true);
+      hasRecordedWin.current = true;
       // Delay showing modal for dramatic effect (let treasure pulse play)
       const timer = setTimeout(() => {
         setShowShareModal(true);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [gameState.hasWon, gameState.moveCount, hasRecordedWin, hasPlayedToday, recordWin, par]);
+  }, [gameState.hasWon, gameState.moveCount, hasPlayedToday, recordWin, par]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -48,10 +47,10 @@ export function Game() {
         <div className="flex items-center justify-between max-w-md mx-auto px-4 py-4">
           <button
             onClick={() => setShowHowToPlay(true)}
-            className="w-8 h-8 flex items-center justify-center rounded border border-[#4a4a6a] text-sm text-[#a0a0b0] hover:text-[#ffd700] hover:border-[#ffd700]/60 transition-colors"
+            className="text-[#6a6a8a] hover:text-[#ffd700] transition-colors"
             title="How to Play"
           >
-            ?
+            <CircleHelp size={18} strokeWidth={1.5} />
           </button>
 
           <div className="text-center">
@@ -68,14 +67,10 @@ export function Game() {
 
           <button
             onClick={() => setShowStats(true)}
-            className="w-8 h-8 flex items-center justify-center rounded border border-[#4a4a6a] text-[#a0a0b0] hover:text-[#ffd700] hover:border-[#ffd700]/60 transition-colors"
+            className="text-[#6a6a8a] hover:text-[#ffd700] transition-colors"
             title="Statistics"
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-              <rect x="1" y="8" width="3" height="5" rx="0.5" />
-              <rect x="5.5" y="4" width="3" height="9" rx="0.5" />
-              <rect x="10" y="1" width="3" height="12" rx="0.5" />
-            </svg>
+            <BarChart3 size={18} strokeWidth={1.5} />
           </button>
         </div>
       </header>

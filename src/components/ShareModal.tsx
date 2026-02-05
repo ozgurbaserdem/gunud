@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Dungeon } from '../types';
 import { generateShareText, copyToClipboard, getGunudRating } from '../utils/sharing';
 
@@ -69,27 +69,37 @@ export function ShareModal({
   const rating = getGunudRating(moves, par);
   const confettiConfig = CONFETTI_CONFIG[rating.grade];
 
-  // Manage confetti phase with a single state driven by CSS animation timing
+  // Manage confetti phase — reset to 'active' each time modal opens
   const [confettiPhase, setConfettiPhase] = useState<'active' | 'shimmer' | 'done'>('done');
+  const prevOpen = useRef(false);
 
   useEffect(() => {
-    if (!isOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing animation phase with isOpen prop
-      setConfettiPhase('done');
-      return;
+    // Only trigger on open transition (false → true)
+    if (isOpen && !prevOpen.current) {
+      setConfettiPhase('active');
+      const confettiDuration = confettiConfig
+        ? parseFloat(confettiConfig.duration) * 1000 + confettiConfig.maxDelay * 1000
+        : 0;
+      const timer = setTimeout(() => {
+        setConfettiPhase(rating.grade === 'S' ? 'shimmer' : 'done');
+      }, confettiDuration || 500);
+      prevOpen.current = true;
+      return () => clearTimeout(timer);
     }
-    setConfettiPhase('active');
-    const confettiDuration = confettiConfig
-      ? parseFloat(confettiConfig.duration) * 1000 + confettiConfig.maxDelay * 1000
-      : 0;
-    const timer = setTimeout(() => {
-      setConfettiPhase(rating.grade === 'S' ? 'shimmer' : 'done');
-    }, confettiDuration || 500);
-    return () => clearTimeout(timer);
+    if (!isOpen) {
+      prevOpen.current = false;
+    }
   }, [isOpen, rating.grade, confettiConfig]);
 
   const showConfetti = confettiPhase === 'active';
   const showShimmer = confettiPhase === 'shimmer';
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -111,8 +121,8 @@ export function ShareModal({
   const cluesHighlight = clueCount <= moves;
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#2d2d44] rounded-lg p-6 max-w-sm w-full text-center pixel-border relative overflow-hidden modal-enter">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-[#2d2d44] rounded-lg p-6 max-w-sm w-full text-center pixel-border relative overflow-hidden modal-enter" onClick={e => e.stopPropagation()}>
         {/* Tiered confetti */}
         {showConfetti && confettiConfig && (
           <div className="absolute inset-0 pointer-events-none">
