@@ -32,12 +32,19 @@ export function DungeonMap({
 
   const scale = 1;
   const padding = 60;
-  const width = (bounds.maxX - bounds.minX + 1) * 100 * scale + padding * 2;
-  const height = (bounds.maxY - bounds.minY + 1) * 100 * scale + padding * 2;
+  const minGridSpan = 6;
+  const actualGridW = bounds.maxX - bounds.minX + 1;
+  const actualGridH = bounds.maxY - bounds.minY + 1;
+  const gridW = Math.max(actualGridW, minGridSpan);
+  const gridH = Math.max(actualGridH, minGridSpan);
+  const width = gridW * 100 * scale + padding * 2;
+  const height = gridH * 100 * scale + padding * 2;
 
-  // Offset to center the dungeon
-  const offsetX = -bounds.minX * 100 * scale + padding;
-  const offsetY = -bounds.minY * 100 * scale + padding;
+  // Offset to center the dungeon within the (possibly expanded) viewBox
+  const extraX = (gridW - actualGridW) * 100 * scale / 2;
+  const extraY = (gridH - actualGridH) * 100 * scale / 2;
+  const offsetX = -bounds.minX * 100 * scale + padding + extraX;
+  const offsetY = -bounds.minY * 100 * scale + padding + extraY;
 
   // Generate unique door connections (avoid duplicates)
   const doors = useMemo(() => {
