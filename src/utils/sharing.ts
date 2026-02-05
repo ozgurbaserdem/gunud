@@ -32,7 +32,7 @@ export function generateShareText(
 ${emojiGrid}
 
 Rating: ${rating.grade} - ${rating.name} ${rating.emoji}
-${moves} moves (Par: ${par}) | Echoes: ${echoes}
+${moves} moves (Par: ${par}) | Clues: ${echoes}
 
 dungeonecho.game`;
 

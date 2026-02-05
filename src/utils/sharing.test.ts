@@ -139,13 +139,13 @@ describe('generateShareText', () => {
   it('includes echo count from visitedRoomIds.size when echoCount not provided', () => {
     const visited = new Set([0, 1, 2, 3]);
     const result = generateShareText(42, 5, 5, visited, testDungeon);
-    expect(result.text).toContain('Echoes: 4');
+    expect(result.text).toContain('Clues: 4');
   });
 
   it('uses explicit echoCount when provided', () => {
     const visited = new Set([0, 1, 2, 3]);
     const result = generateShareText(42, 5, 5, visited, testDungeon, 7);
-    expect(result.text).toContain('Echoes: 7');
+    expect(result.text).toContain('Clues: 7');
   });
 
   it('includes site URL', () => {

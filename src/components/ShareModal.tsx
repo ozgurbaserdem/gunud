@@ -166,7 +166,7 @@ export function ShareModal({
           </div>
           <div className="w-px h-10 bg-[#4a4a6a]" />
           <div className="text-center">
-            <p className="text-xs text-[#a0a0b0] uppercase">Echoes</p>
+            <p className="text-xs text-[#a0a0b0] uppercase">Clues</p>
             <p className={`text-2xl font-bold ${echoesHighlight ? 'text-[#ffd700]' : 'text-[#a0a0b0]'}`}>
               {echoCount}
             </p>
