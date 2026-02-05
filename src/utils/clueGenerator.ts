@@ -7,6 +7,7 @@ export function generateClues(dungeon: Dungeon, dateString: string): Map<number,
   const { rooms, entranceId, treasureId } = dungeon;
   const treasureRoom = rooms.find(r => r.id === treasureId)!;
   const distFromEntrance = calculateDistances(rooms, entranceId);
+  const distFromTreasure = calculateDistances(rooms, treasureId);
 
   // Sort non-treasure rooms by distance from entrance (closest first)
   const clueRooms = rooms
@@ -38,11 +39,11 @@ export function generateClues(dungeon: Dungeon, dateString: string): Map<number,
     lastClues = new Map<number, Clue>();
     for (const room of clueRooms) {
       const category = assignments.get(room.id)!;
-      lastClues.set(room.id, buildClue(category, room, treasureRoom, distFromEntrance, random));
+      lastClues.set(room.id, buildClue(category, room, treasureRoom, distFromEntrance, distFromTreasure, random));
     }
 
     // Check solvability: all clues combined must uniquely identify treasure
-    if (isSolvable(lastClues, rooms, treasureId, distFromEntrance)) {
+    if (isSolvable(lastClues, rooms, treasureId)) {
       return lastClues;
     }
   }
@@ -54,8 +55,7 @@ export function generateClues(dungeon: Dungeon, dateString: string): Map<number,
 function isSolvable(
   clues: Map<number, Clue>,
   rooms: Room[],
-  treasureId: number,
-  distFromEntrance: Map<number, number>
+  treasureId: number
 ): boolean {
   let candidates = rooms.map(r => r.id);
 
@@ -63,7 +63,7 @@ function isSolvable(
     const clueRoom = rooms.find(r => r.id === roomId)!;
     candidates = candidates.filter(id => {
       const candidate = rooms.find(r => r.id === id)!;
-      return roomMatchesClue(candidate, clue, clueRoom, distFromEntrance);
+      return roomMatchesClue(candidate, clue, clueRoom, rooms);
     });
   }
 
@@ -74,7 +74,7 @@ export function roomMatchesClue(
   candidate: Room,
   clue: Clue,
   clueRoom: Room,
-  distFromEntrance: Map<number, number>
+  rooms: Room[]
 ): boolean {
   switch (clue.category) {
     case 'connection': {
@@ -98,7 +98,8 @@ export function roomMatchesClue(
     }
     case 'entrance': {
       const d = parseInt(clue.compact);
-      return distFromEntrance.get(candidate.id) === d;
+      const distFromClueRoom = calculateDistances(rooms, clueRoom.id);
+      return distFromClueRoom.get(candidate.id) === d;
     }
     default:
       return true;
@@ -110,6 +111,7 @@ function buildClue(
   room: Room,
   treasureRoom: Room,
   distFromEntrance: Map<number, number>,
+  distFromTreasure: Map<number, number>,
   random: () => number
 ): Clue {
   switch (category) {
@@ -144,10 +146,10 @@ function buildClue(
         : { category: 'relational', text: 'The treasure is NOT adjacent to this room', compact: 'Not adj.', icon: '\u{1F441}' };
     }
     case 'entrance': {
-      const d = distFromEntrance.get(treasureRoom.id) || 0;
+      const d = distFromTreasure.get(room.id) || 0;
       return {
         category: 'entrance',
-        text: `The treasure is ${d} steps from the entrance`,
+        text: `The treasure is ${d} steps from here`,
         compact: `${d} steps`,
         icon: '\u{1F6AA}',
       };

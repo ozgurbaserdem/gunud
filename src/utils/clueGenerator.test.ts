@@ -73,13 +73,12 @@ describe('generateClues', () => {
     }
   });
 
-  it('entrance clues match BFS distance', () => {
-    const dist = calculateDistances(dungeon.rooms, dungeon.entranceId);
-    const expected = dist.get(dungeon.treasureId)!;
-    for (const clue of clues.values()) {
-      if (clue.category === 'entrance') {
-        expect(clue.text).toContain(`${expected} steps`);
-      }
+  it('entrance clues show distance from that room to treasure', () => {
+    const distFromTreasure = calculateDistances(dungeon.rooms, dungeon.treasureId);
+    for (const [roomId, clue] of clues) {
+      if (clue.category !== 'entrance') continue;
+      const expected = distFromTreasure.get(roomId)!;
+      expect(clue.text).toContain(`${expected} steps`);
     }
   });
 
@@ -115,14 +114,13 @@ describe('generateClues', () => {
       it(`puzzle ${date} is solvable — clues uniquely identify treasure`, () => {
         const d = generateDungeon(date);
         const c = generateClues(d, date);
-        const distFromEntrance = calculateDistances(d.rooms, d.entranceId);
 
         let candidates = d.rooms.map(r => r.id);
         for (const [roomId, clue] of c) {
           const clueRoom = d.rooms.find(r => r.id === roomId)!;
           candidates = candidates.filter(id => {
             const candidate = d.rooms.find(r => r.id === id)!;
-            return roomMatchesClue(candidate, clue, clueRoom, distFromEntrance);
+            return roomMatchesClue(candidate, clue, clueRoom, d.rooms);
           });
         }
 
