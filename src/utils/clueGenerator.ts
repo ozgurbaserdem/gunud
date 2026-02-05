@@ -14,7 +14,7 @@ export function generateClues(dungeon: Dungeon, dateString: string): Map<number,
     .filter(r => r.id !== treasureId)
     .sort((a, b) => (distFromEntrance.get(a.id) || 0) - (distFromEntrance.get(b.id) || 0));
 
-  const categories: ClueCategory[] = ['connection', 'spatial', 'relational', 'entrance'];
+  const categories: ClueCategory[] = ['parity', 'spatial', 'manhattan', 'entrance'];
 
   // Retry loop: reshuffle assignments until clues uniquely identify treasure
   const maxAttempts = 10;
@@ -77,15 +77,11 @@ export function roomMatchesClue(
   rooms: Room[]
 ): boolean {
   switch (clue.category) {
-    case 'connection': {
-      const n = parseInt(clue.compact);
+    case 'parity': {
+      const isEven = clue.compact === 'Even dist.';
       const distFromCandidate = calculateDistances(rooms, candidate.id);
-      const clueRoomDist = distFromCandidate.get(clueRoom.id) || 0;
-      const closerExits = clueRoom.connections.filter(connId => {
-        const connDist = distFromCandidate.get(connId);
-        return connDist !== undefined && connDist < clueRoomDist;
-      }).length;
-      return closerExits === n;
+      const d = distFromCandidate.get(clueRoom.id) || 0;
+      return (d % 2 === 0) === isEven;
     }
     case 'spatial': {
       const dx = candidate.x - clueRoom.x;
@@ -98,9 +94,11 @@ export function roomMatchesClue(
       if (clue.compact.includes('Same row')) return dy === 0;
       return true;
     }
-    case 'relational': {
-      const isAdj = clueRoom.connections.includes(candidate.id);
-      return clue.compact === 'Adjacent!' ? isAdj : !isAdj;
+    case 'manhattan': {
+      const n = parseInt(clue.compact);
+      const dx = Math.abs(candidate.x - clueRoom.x);
+      const dy = Math.abs(candidate.y - clueRoom.y);
+      return (dx + dy) === n;
     }
     case 'entrance': {
       const d = parseInt(clue.compact);
@@ -120,17 +118,14 @@ function buildClue(
   random: () => number
 ): Clue {
   switch (category) {
-    case 'connection': {
-      const roomDist = distFromTreasure.get(room.id) || 0;
-      const n = room.connections.filter(connId => {
-        const connDist = distFromTreasure.get(connId);
-        return connDist !== undefined && connDist < roomDist;
-      }).length;
+    case 'parity': {
+      const d = distFromTreasure.get(room.id) || 0;
+      const isEven = d % 2 === 0;
       return {
-        category: 'connection',
-        text: `${n} of your exits lead${n === 1 ? 's' : ''} toward the relic`,
-        compact: `${n} path${n !== 1 ? 's' : ''} closer`,
-        icon: '\u{1F517}',
+        category: 'parity',
+        text: `The relic is an ${isEven ? 'even' : 'odd'} number of steps away`,
+        compact: isEven ? 'Even dist.' : 'Odd dist.',
+        icon: '\u2696\uFE0F',
       };
     }
     case 'spatial': {
@@ -148,11 +143,16 @@ function buildClue(
         return { category: 'spatial', text: 'The treasure is in the same row', compact: '\u2014 Same row', icon: '\u{1F4CD}' };
       }
     }
-    case 'relational': {
-      const isAdj = room.connections.includes(treasureRoom.id);
-      return isAdj
-        ? { category: 'relational', text: 'The treasure IS adjacent to this room', compact: 'Adjacent!', icon: '\u{1F441}' }
-        : { category: 'relational', text: 'The treasure is NOT adjacent to this room', compact: 'Not adj.', icon: '\u{1F441}' };
+    case 'manhattan': {
+      const dx = Math.abs(treasureRoom.x - room.x);
+      const dy = Math.abs(treasureRoom.y - room.y);
+      const manhattan = dx + dy;
+      return {
+        category: 'manhattan',
+        text: `The relic is ${manhattan} square${manhattan !== 1 ? 's' : ''} away on the map`,
+        compact: `${manhattan} sq.`,
+        icon: '\u{1F4D0}',
+      };
     }
     case 'entrance': {
       const d = distFromTreasure.get(room.id) || 0;

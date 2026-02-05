@@ -26,10 +26,15 @@ export function HowToPlay({ isOpen, onClose }: HowToPlayProps) {
             <span className="text-2xl">🔍</span>
             <div>
               <p className="font-bold">Collect Clues</p>
-              <p className="text-sm text-[#a0a0b0]">
-                Each room reveals a property of the treasure room — its exits (🔗),
-                direction (📍), adjacency (👁), or distance from entrance (🚪).
+              <p className="text-sm text-[#a0a0b0] mb-2">
+                Each room holds a different type of clue:
               </p>
+              <ul className="text-sm text-[#a0a0b0] space-y-1">
+                <li>📍 <span className="text-[#e8e8f0]">Direction</span> — left, right, above, or below</li>
+                <li>🚪 <span className="text-[#e8e8f0]">Path distance</span> — steps to the relic</li>
+                <li>⚖️ <span className="text-[#e8e8f0]">Parity</span> — even or odd steps away</li>
+                <li>📐 <span className="text-[#e8e8f0]">Map distance</span> — grid squares away</li>
+              </ul>
             </div>
           </div>
 

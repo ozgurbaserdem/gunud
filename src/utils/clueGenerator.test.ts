@@ -22,9 +22,9 @@ describe('generateClues', () => {
   it('includes at least one of each clue category', () => {
     const cats = new Set<ClueCategory>();
     for (const clue of clues.values()) cats.add(clue.category);
-    expect(cats.has('connection')).toBe(true);
+    expect(cats.has('parity')).toBe(true);
     expect(cats.has('spatial')).toBe(true);
-    expect(cats.has('relational')).toBe(true);
+    expect(cats.has('manhattan')).toBe(true);
     expect(cats.has('entrance')).toBe(true);
   });
 
@@ -38,18 +38,14 @@ describe('generateClues', () => {
     }
   });
 
-  it('connection clues report paths closer to relic', () => {
+  it('parity clues report correct even/odd distance', () => {
     const distFromTreasure = calculateDistances(dungeon.rooms, dungeon.treasureId);
     for (const [roomId, clue] of clues) {
-      if (clue.category !== 'connection') continue;
-      const room = dungeon.rooms.find(r => r.id === roomId)!;
-      const roomDist = distFromTreasure.get(room.id) || 0;
-      const expectedCloser = room.connections.filter(connId => {
-        const connDist = distFromTreasure.get(connId);
-        return connDist !== undefined && connDist < roomDist;
-      }).length;
-      expect(clue.text).toContain(`${expectedCloser} of your exits`);
-      expect(clue.compact).toContain(`${expectedCloser} path`);
+      if (clue.category !== 'parity') continue;
+      const d = distFromTreasure.get(roomId)!;
+      const isEven = d % 2 === 0;
+      expect(clue.compact).toBe(isEven ? 'Even dist.' : 'Odd dist.');
+      expect(clue.text).toContain(isEven ? 'even' : 'odd');
     }
   });
 
@@ -69,13 +65,14 @@ describe('generateClues', () => {
     }
   });
 
-  it('relational clues correctly report adjacency', () => {
+  it('manhattan clues report correct grid distance', () => {
+    const treasure = dungeon.rooms.find(r => r.id === dungeon.treasureId)!;
     for (const [roomId, clue] of clues) {
-      if (clue.category !== 'relational') continue;
+      if (clue.category !== 'manhattan') continue;
       const room = dungeon.rooms.find(r => r.id === roomId)!;
-      const isAdj = room.connections.includes(dungeon.treasureId);
-      if (clue.compact === 'Adjacent!') expect(isAdj).toBe(true);
-      else expect(isAdj).toBe(false);
+      const expectedDist = Math.abs(treasure.x - room.x) + Math.abs(treasure.y - room.y);
+      expect(clue.compact).toBe(`${expectedDist} sq.`);
+      expect(clue.text).toContain(`${expectedDist} square`);
     }
   });
 
@@ -89,7 +86,7 @@ describe('generateClues', () => {
   });
 
   it('all clues have valid icon and non-empty text', () => {
-    const validIcons = ['🔗', '📍', '👁', '🚪'];
+    const validIcons = ['\u2696\uFE0F', '\u{1F4CD}', '\u{1F4D0}', '\u{1F6AA}'];
     for (const clue of clues.values()) {
       expect(validIcons).toContain(clue.icon);
       expect(clue.text.length).toBeGreaterThan(0);
@@ -134,5 +131,36 @@ describe('generateClues', () => {
         expect(candidates.length).toBe(1);
       });
     }
+  });
+
+  // Verify parity clues actually vary (not always the same value)
+  describe('clue variety', () => {
+    it('parity clues produce both even and odd across multiple dungeons', () => {
+      const parityValues = new Set<string>();
+      for (let i = 1; i <= 30; i++) {
+        const date = `2026-03-${String(i).padStart(2, '0')}`;
+        const d = generateDungeon(date);
+        const c = generateClues(d, date);
+        for (const clue of c.values()) {
+          if (clue.category === 'parity') parityValues.add(clue.compact);
+        }
+      }
+      expect(parityValues.has('Even dist.')).toBe(true);
+      expect(parityValues.has('Odd dist.')).toBe(true);
+    });
+
+    it('manhattan clues produce varying distances across rooms', () => {
+      const manhattanValues = new Set<string>();
+      for (let i = 1; i <= 10; i++) {
+        const date = `2026-04-${String(i).padStart(2, '0')}`;
+        const d = generateDungeon(date);
+        const c = generateClues(d, date);
+        for (const clue of c.values()) {
+          if (clue.category === 'manhattan') manhattanValues.add(clue.compact);
+        }
+      }
+      // Manhattan distances should vary — at least 3 different values across 10 puzzles
+      expect(manhattanValues.size).toBeGreaterThanOrEqual(3);
+    });
   });
 });

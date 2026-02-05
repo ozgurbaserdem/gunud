@@ -11,7 +11,7 @@ export interface Dungeon {
   treasureId: number;
 }
 
-export type ClueCategory = 'connection' | 'spatial' | 'relational' | 'entrance';
+export type ClueCategory = 'parity' | 'spatial' | 'manhattan' | 'entrance';
 
 export interface Clue {
   category: ClueCategory;

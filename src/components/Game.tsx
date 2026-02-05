@@ -44,27 +44,29 @@ export function Game() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b border-[#4a4a6a]">
-        <button
-          onClick={() => setShowHowToPlay(true)}
-          className="text-2xl hover:scale-110 transition-transform"
-          title="How to Play"
-        >
-          ❓
-        </button>
+      <header className="border-b border-[#4a4a6a]">
+        <div className="flex items-center justify-between max-w-md mx-auto px-4 py-3">
+          <button
+            onClick={() => setShowHowToPlay(true)}
+            className="text-xl hover:scale-110 transition-transform w-8"
+            title="How to Play"
+          >
+            ❓
+          </button>
 
-        <div className="text-center">
-          <h1 className="text-xl sm:text-2xl font-bold text-[#ffd700]">⛏️ Gunud</h1>
-          <p className="text-xs text-[#a0a0b0]">Puzzle #{puzzleNumber}</p>
+          <div className="text-center">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#ffd700]">⛏️ Gunud ⛏️</h1>
+            <p className="text-xs text-[#a0a0b0]">Puzzle #{puzzleNumber}</p>
+          </div>
+
+          <button
+            onClick={() => setShowStats(true)}
+            className="text-xl hover:scale-110 transition-transform w-8"
+            title="Statistics"
+          >
+            📊
+          </button>
         </div>
-
-        <button
-          onClick={() => setShowStats(true)}
-          className="text-2xl hover:scale-110 transition-transform"
-          title="Statistics"
-        >
-          📊
-        </button>
       </header>
 
       {/* Game Area */}
