@@ -11,13 +11,22 @@ export interface Dungeon {
   treasureId: number;
 }
 
+export type ClueCategory = 'connection' | 'spatial' | 'relational' | 'entrance';
+
+export interface Clue {
+  category: ClueCategory;
+  text: string;     // Full: "The treasure room has 3 exits"
+  compact: string;  // Short: "3 exits"
+  icon: string;     // Emoji: "🔗"
+}
+
 export interface GameState {
   dungeon: Dungeon;
   currentRoomId: number;
   visitedRoomIds: Set<number>;
   moveCount: number;
   hasWon: boolean;
-  distances: Map<number, number>; // roomId -> distance to treasure
+  clues: Map<number, Clue>; // roomId -> clue
 }
 
 export interface EchoRating {

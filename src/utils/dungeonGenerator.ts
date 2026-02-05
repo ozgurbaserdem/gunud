@@ -1,7 +1,7 @@
 import type { Dungeon, Room } from '../types';
 
 // Seeded random number generator (Mulberry32)
-function createSeededRandom(seed: number) {
+export function createSeededRandom(seed: number) {
   return function () {
     let t = (seed += 0x6d2b79f5);
     t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -11,7 +11,7 @@ function createSeededRandom(seed: number) {
 }
 
 // Convert date string to seed number
-function dateToSeed(dateString: string): number {
+export function dateToSeed(dateString: string): number {
   let hash = 0;
   for (let i = 0; i < dateString.length; i++) {
     const char = dateString.charCodeAt(i);
