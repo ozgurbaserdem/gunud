@@ -1,7 +1,7 @@
 import type { Dungeon, Room } from '../types';
 
 // Seeded random number generator (Mulberry32)
-export function createSeededRandom(seed: number) {
+export function createSeededRandom(seed: number): () => number {
   return function () {
     let t = (seed += 0x6d2b79f5);
     t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -39,12 +39,10 @@ export function getPuzzleNumber(dateString: string): number {
 // Count loops (cycles) in the graph using DFS
 function countLoops(rooms: Room[]): number {
   const visited = new Set<number>();
-  const parent = new Map<number, number>();
   let loopCount = 0;
 
   function dfs(roomId: number, parentId: number): void {
     visited.add(roomId);
-    parent.set(roomId, parentId);
 
     const room = rooms.find((r) => r.id === roomId)!;
     for (const neighborId of room.connections) {
@@ -65,7 +63,7 @@ function countLoops(rooms: Room[]): number {
 }
 
 // Ensure minimum number of loops exist by connecting rooms that share neighbors
-function ensureLoops(rooms: Room[], _random: () => number, minLoops: number): void {
+function ensureLoops(rooms: Room[], minLoops: number): void {
   let currentLoops = countLoops(rooms);
 
   while (currentLoops < minLoops) {
@@ -115,11 +113,7 @@ export function areGridAdjacent(room1: Room, room2: Room): boolean {
 // Get max distance from entrance to any room
 function getMaxDistance(rooms: Room[], entranceId: number): number {
   const distances = calculateDistances(rooms, entranceId);
-  let maxDist = 0;
-  for (const dist of distances.values()) {
-    if (dist > maxDist) maxDist = dist;
-  }
-  return maxDist;
+  return Math.max(...distances.values());
 }
 
 // Check if graph stays connected after removing an edge
@@ -468,7 +462,7 @@ export function generateDungeon(dateString: string): Dungeon {
   }
 
   // Ensure at least 2 loops exist for circular paths
-  ensureLoops(rooms, random, 2);
+  ensureLoops(rooms, 2);
 
   // Entrance is room 0
   const entranceId = 0;
