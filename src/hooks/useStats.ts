@@ -73,10 +73,9 @@ export function useStats(): UseStatsReturn {
         const newStreak = isConsecutive ? prev.currentStreak + 1 : 1;
 
         const rating = getGunudRating(moves, par);
-        const prevCounts = prev.ratingCounts || { S: 0, A: 0, B: 0, C: 0, D: 0 };
         const newRatingCounts: RatingCounts = {
-          ...prevCounts,
-          [rating.grade]: (prevCounts[rating.grade] || 0) + 1,
+          ...prev.ratingCounts,
+          [rating.grade]: prev.ratingCounts[rating.grade] + 1,
         };
 
         const newStats: Stats = {
@@ -96,12 +95,11 @@ export function useStats(): UseStatsReturn {
     [hasPlayedToday, todayString]
   );
 
-  // Sync stats on mount and when localStorage changes
+  // Sync stats when localStorage changes from another tab
   useEffect(() => {
-    const handleStorage = () => {
+    function handleStorage(): void {
       setStats(loadStats());
-    };
-
+    }
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
