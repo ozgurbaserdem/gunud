@@ -84,9 +84,12 @@ function ensureLoops(rooms: Room[], _random: () => number, minLoops: number): vo
           if (candidateId === room.id) continue;
           if (room.connections.includes(candidateId)) continue;
 
+          const candidate = rooms.find((r) => r.id === candidateId)!;
+          // Only connect if grid-adjacent (avoids lines crossing rooms)
+          if (!areGridAdjacent(room, candidate)) continue;
+
           // Connect room to candidate (creates a triangle/loop)
           room.connections.push(candidateId);
-          const candidate = rooms.find((r) => r.id === candidateId)!;
           candidate.connections.push(room.id);
           added = true;
           break;
@@ -97,6 +100,16 @@ function ensureLoops(rooms: Room[], _random: () => number, minLoops: number): vo
     if (!added) break; // No more loops can be added
     currentLoops = countLoops(rooms);
   }
+}
+
+// Check if two rooms are grid-adjacent (Manhattan distance 1 or 2)
+// Distance 2 allowed only for diagonal connections (different x AND y)
+function areGridAdjacent(room1: Room, room2: Room): boolean {
+  const dx = Math.abs(room1.x - room2.x);
+  const dy = Math.abs(room1.y - room2.y);
+  const dist = dx + dy;
+  // Allow distance 1 (directly adjacent) or distance 2 diagonal
+  return dist === 1 || (dist === 2 && dx === 1 && dy === 1);
 }
 
 // Get max distance from entrance to any room
@@ -203,12 +216,12 @@ function ensureDistanceRange(rooms: Room[], entranceId: number, minDist: number,
     const farRoom = farRooms[0];
     const farRoomDist = distances.get(farRoom.id) || 0;
 
-    // Find a room closer to entrance that we can connect to
-    // Target: connect to a room at distance (maxDist - 1) so far room becomes maxDist
+    // Find a grid-adjacent room closer to entrance that we can connect to
     let added = false;
     for (const room of rooms) {
       if (room.id === farRoom.id) continue;
       if (farRoom.connections.includes(room.id)) continue;
+      if (!areGridAdjacent(farRoom, room)) continue; // Must be grid-adjacent
 
       const roomDist = distances.get(room.id) || 0;
       // Connect if this would make the far room closer but still within range
@@ -360,8 +373,7 @@ export function generateDungeon(dateString: string): Dungeon {
     const candidates = rooms.filter((r) => {
       if (r.id === fromId) return false;
       if (rooms[fromId].connections.includes(r.id)) return false;
-      const dist = Math.abs(rooms[fromId].x - r.x) + Math.abs(rooms[fromId].y - r.y);
-      return dist <= 3; // Connect rooms within distance 3 for longer "shortcuts"
+      return areGridAdjacent(rooms[fromId], r); // Only connect grid-adjacent rooms
     });
 
     if (candidates.length > 0) {
