@@ -1,18 +1,18 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import type { GameState, Dungeon } from '../types';
+import type { GameState, Dungeon, Clue } from '../types';
 import {
   generateDungeon,
   getTodayDateString,
   calculatePar,
   getPuzzleNumber,
 } from '../utils/dungeonGenerator';
-import { calculateDistancesToTreasure } from '../utils/pathfinding';
+import { generateClues } from '../utils/clueGenerator';
 
 const isDev = import.meta.env.DEV;
 
 interface UseGameReturn {
   gameState: GameState;
-  currentDistance: number;
+  currentClue: Clue | null;
   par: number;
   puzzleNumber: number;
   moveToRoom: (roomId: number) => void;
@@ -22,8 +22,8 @@ interface UseGameReturn {
   regenerateDungeon: () => void;
 }
 
-function createInitialState(dungeon: Dungeon): GameState {
-  const distances = calculateDistancesToTreasure(dungeon.rooms, dungeon.treasureId);
+function createInitialState(dungeon: Dungeon, dateString: string): GameState {
+  const clues = generateClues(dungeon, dateString);
 
   return {
     dungeon,
@@ -31,7 +31,7 @@ function createInitialState(dungeon: Dungeon): GameState {
     visitedRoomIds: new Set([dungeon.entranceId]),
     moveCount: 0,
     hasWon: dungeon.entranceId === dungeon.treasureId,
-    distances,
+    clues,
   };
 }
 
@@ -40,45 +40,41 @@ export function useGame(): UseGameReturn {
   const puzzleNumber = getPuzzleNumber(dateString);
 
   const [dungeon, setDungeon] = useState(() => generateDungeon(dateString));
-  const [gameState, setGameState] = useState(() => createInitialState(dungeon));
+  const [gameState, setGameState] = useState(() => createInitialState(dungeon, dateString));
 
-  // Dev mode: Shift+R to regenerate dungeon with random seed
   const regenerateDungeon = useCallback(() => {
     if (!isDev) return;
     const randomSeed = `dev-${Date.now()}-${Math.random()}`;
     const newDungeon = generateDungeon(randomSeed);
     setDungeon(newDungeon);
-    setGameState(createInitialState(newDungeon));
+    setGameState(createInitialState(newDungeon, randomSeed));
     console.log('[Dev] Regenerated dungeon with seed:', randomSeed);
   }, []);
 
   useEffect(() => {
     if (!isDev) return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.shiftKey && e.key.toLowerCase() === 'r') {
         e.preventDefault();
         regenerateDungeon();
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [regenerateDungeon]);
 
-  const par = useMemo(() => calculatePar(dungeon), [dungeon]);
+  // Par = shortest path + 1 (clue-gathering buffer)
+  const par = useMemo(() => calculatePar(dungeon) + 1, [dungeon]);
 
-  const currentDistance = useMemo(() => {
-    return gameState.distances.get(gameState.currentRoomId) ?? 0;
-  }, [gameState.currentRoomId, gameState.distances]);
+  const currentClue = useMemo(() => {
+    return gameState.clues.get(gameState.currentRoomId) ?? null;
+  }, [gameState.currentRoomId, gameState.clues]);
 
   const canMoveTo = useCallback(
     (roomId: number): boolean => {
       if (gameState.hasWon) return false;
-
       const currentRoom = dungeon.rooms.find((r) => r.id === gameState.currentRoomId);
       if (!currentRoom) return false;
-
       return currentRoom.connections.includes(roomId);
     },
     [dungeon.rooms, gameState.currentRoomId, gameState.hasWon]
@@ -86,13 +82,9 @@ export function useGame(): UseGameReturn {
 
   const isRoomVisible = useCallback(
     (roomId: number): boolean => {
-      // Visited rooms are always visible
       if (gameState.visitedRoomIds.has(roomId)) return true;
-
-      // Adjacent rooms to current position are visible
       const currentRoom = dungeon.rooms.find((r) => r.id === gameState.currentRoomId);
       if (!currentRoom) return false;
-
       return currentRoom.connections.includes(roomId);
     },
     [dungeon.rooms, gameState.currentRoomId, gameState.visitedRoomIds]
@@ -101,19 +93,15 @@ export function useGame(): UseGameReturn {
   const moveToRoom = useCallback(
     (roomId: number) => {
       if (!canMoveTo(roomId)) return;
-
       setGameState((prev) => {
         const newVisited = new Set(prev.visitedRoomIds);
         newVisited.add(roomId);
-
-        const hasWon = roomId === dungeon.treasureId;
-
         return {
           ...prev,
           currentRoomId: roomId,
           visitedRoomIds: newVisited,
           moveCount: prev.moveCount + 1,
-          hasWon,
+          hasWon: roomId === dungeon.treasureId,
         };
       });
     },
@@ -121,12 +109,12 @@ export function useGame(): UseGameReturn {
   );
 
   const resetGame = useCallback(() => {
-    setGameState(createInitialState(dungeon));
-  }, [dungeon]);
+    setGameState(createInitialState(dungeon, dateString));
+  }, [dungeon, dateString]);
 
   return {
     gameState,
-    currentDistance,
+    currentClue,
     par,
     puzzleNumber,
     moveToRoom,

@@ -7,7 +7,7 @@ import { HowToPlay } from './HowToPlay';
 import { Stats } from './Stats';
 
 export function Game() {
-  const { gameState, currentDistance, par, puzzleNumber, moveToRoom, canMoveTo, isRoomVisible } =
+  const { gameState, currentClue, par, puzzleNumber, moveToRoom, canMoveTo, isRoomVisible } =
     useGame();
 
   const { stats, recordWin, hasPlayedToday, averageMoves } = useStats();
@@ -92,8 +92,10 @@ export function Game() {
             <>
               <div className="flex items-center justify-center gap-6 mb-2">
                 <div className="text-center">
-                  <p className="text-xs text-[#a0a0b0]">DISTANCE</p>
-                  <p className="text-3xl font-bold text-[#ffd700] torch-glow">{currentDistance}</p>
+                  <p className="text-xs text-[#a0a0b0]">CLUES</p>
+                  <p className="text-3xl font-bold text-[#ffd700] torch-glow">
+                    {gameState.visitedRoomIds.size}
+                  </p>
                 </div>
                 <div className="w-px h-10 bg-[#4a4a6a]" />
                 <div className="text-center">
@@ -106,7 +108,14 @@ export function Game() {
                   <p className="text-3xl font-bold text-[#a0a0b0]">{par}</p>
                 </div>
               </div>
-              <p className="text-sm text-[#a0a0b0]">Click an adjacent room to move</p>
+
+              {currentClue && (
+                <p className="text-base text-[#ffd700] font-bold mb-2 clue-reveal">
+                  {currentClue.icon} {currentClue.text}
+                </p>
+              )}
+
+              <p className="text-sm text-[#a0a0b0]">Collect clues to find the treasure</p>
             </>
           )}
         </div>

@@ -16,7 +16,7 @@ export function DungeonMap({
   canMoveTo,
   isRoomVisible,
 }: DungeonMapProps) {
-  const { dungeon, currentRoomId, visitedRoomIds, distances } = gameState;
+  const { dungeon, currentRoomId, visitedRoomIds, clues } = gameState;
 
   // Calculate SVG bounds
   const bounds = useMemo(() => {
@@ -103,7 +103,7 @@ export function DungeonMap({
 
           {/* Render rooms */}
           {dungeon.rooms.map((room) => {
-            const distance = distances.get(room.id) ?? 0;
+            const clue = clues.get(room.id) ?? null;
             const isCurrent = room.id === currentRoomId;
             const isVisited = visitedRoomIds.has(room.id);
             const isVisible = isRoomVisible(room.id);
@@ -114,7 +114,7 @@ export function DungeonMap({
               <Room
                 key={room.id}
                 room={room}
-                distance={distance}
+                clue={clue}
                 isCurrent={isCurrent}
                 isVisited={isVisited}
                 isVisible={isVisible}
