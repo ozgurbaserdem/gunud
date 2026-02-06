@@ -1,4 +1,4 @@
-import { CircleHelp, BarChart3 } from 'lucide-react';
+import { HiQuestionMarkCircle, HiChartBar } from 'react-icons/hi2';
 
 interface GameHeaderProps {
   puzzleNumber: number;
@@ -16,7 +16,7 @@ export function GameHeader({ puzzleNumber, isPractice, onShowHelp, onShowStats }
           className="text-text-muted hover:text-treasure-gold transition-colors"
           title="How to Play"
         >
-          <CircleHelp size={24} strokeWidth={1.5} />
+          <HiQuestionMarkCircle size={24} />
         </button>
 
         <div className="text-center">
@@ -36,7 +36,7 @@ export function GameHeader({ puzzleNumber, isPractice, onShowHelp, onShowStats }
           className="text-text-muted hover:text-treasure-gold transition-colors"
           title="Statistics"
         >
-          <BarChart3 size={24} strokeWidth={1.5} />
+          <HiChartBar size={24} />
         </button>
       </div>
     </header>
