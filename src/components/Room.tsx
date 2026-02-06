@@ -1,5 +1,26 @@
 import type { Room as RoomType, Clue } from '../types';
 
+const ARROW_CHARS = /^[←→↑↓|—]/;
+
+function ClueCompact({ text, scale, fill, className }: { text: string; scale: number; fill: string; className?: string }) {
+  const match = text.match(ARROW_CHARS);
+  if (match) {
+    return (
+      <text x={0} y={18 * scale} textAnchor="middle" fontSize={13 * scale}
+        fontFamily="'Courier New', monospace" fill={fill} fontWeight="bold" className={className}>
+        <tspan fontSize={22 * scale} strokeWidth={1.5 * scale} stroke={fill}>{match[0]}</tspan>
+        {text.slice(match[0].length)}
+      </text>
+    );
+  }
+  return (
+    <text x={0} y={18 * scale} textAnchor="middle" fontSize={13 * scale}
+      fontFamily="'Courier New', monospace" fill={fill} fontWeight="bold" className={className}>
+      {text}
+    </text>
+  );
+}
+
 interface RoomProps {
   room: RoomType;
   clue: Clue | null;
@@ -114,33 +135,24 @@ export function Room({
             </text>
           ) : isCurrent && clue ? (
             <>
-              <text x={0} y={-2 * scale} textAnchor="middle" fontSize={16 * scale} className="clue-reveal">
+              <text x={0} y={-6 * scale} textAnchor="middle" fontSize={16 * scale} className="clue-reveal">
                 {clue.icon}
               </text>
-              <text x={0} y={16 * scale} textAnchor="middle" fontSize={9 * scale}
-                fontFamily="'Courier New', monospace" fill="#ffd700" className="clue-reveal">
-                {clue.compact}
-              </text>
+              <ClueCompact text={clue.compact} scale={scale} fill="#ffd700" className="clue-reveal" />
             </>
           ) : isVisited && clue ? (
             <>
-              <text x={0} y={-2 * scale} textAnchor="middle" fontSize={16 * scale}>
+              <text x={0} y={-6 * scale} textAnchor="middle" fontSize={16 * scale}>
                 {clue.icon}
               </text>
-              <text x={0} y={16 * scale} textAnchor="middle" fontSize={9 * scale}
-                fontFamily="'Courier New', monospace" fill="#707080">
-                {clue.compact}
-              </text>
+              <ClueCompact text={clue.compact} scale={scale} fill="#9898b0" />
             </>
           ) : clue && gameOver ? (
             <>
-              <text x={0} y={-2 * scale} textAnchor="middle" fontSize={16 * scale}>
+              <text x={0} y={-6 * scale} textAnchor="middle" fontSize={16 * scale}>
                 {clue.icon}
               </text>
-              <text x={0} y={16 * scale} textAnchor="middle" fontSize={9 * scale}
-                fontFamily="'Courier New', monospace" fill="#707080">
-                {clue.compact}
-              </text>
+              <ClueCompact text={clue.compact} scale={scale} fill="#9898b0" />
             </>
           ) : clue ? (
             <text x={0} y={6 * scale} textAnchor="middle" fontSize={22 * scale} opacity={0.6}>
