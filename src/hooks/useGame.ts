@@ -17,6 +17,7 @@ interface SavedGameState {
   visitedRoomIds: number[];
   moveCount: number;
   hasWon: boolean;
+  hasLost: boolean;
 }
 
 interface UseGameReturn {
@@ -43,6 +44,7 @@ function saveGameState(dateString: string, state: GameState): void {
       visitedRoomIds: [...state.visitedRoomIds],
       moveCount: state.moveCount,
       hasWon: state.hasWon,
+      hasLost: state.hasLost,
     };
     localStorage.setItem(GAME_STATE_KEY, JSON.stringify(saved));
   } catch { /* ignore */ }
@@ -72,6 +74,7 @@ function createInitialState(dungeon: Dungeon, dateString: string): GameState {
       visitedRoomIds: new Set(saved.visitedRoomIds),
       moveCount: saved.moveCount,
       hasWon: saved.hasWon,
+      hasLost: saved.hasLost ?? false,
       clues,
     };
   }
@@ -82,6 +85,7 @@ function createInitialState(dungeon: Dungeon, dateString: string): GameState {
     visitedRoomIds: new Set([dungeon.entranceId]),
     moveCount: 0,
     hasWon: dungeon.entranceId === dungeon.treasureId,
+    hasLost: false,
     clues,
   };
 }
@@ -94,6 +98,7 @@ function createPracticeState(dungeon: Dungeon, seed: string): GameState {
     visitedRoomIds: new Set([dungeon.entranceId]),
     moveCount: 0,
     hasWon: dungeon.entranceId === dungeon.treasureId,
+    hasLost: false,
     clues,
   };
 }
@@ -171,18 +176,19 @@ export function useGame(): UseGameReturn {
 
   const canMoveTo = useCallback(
     (roomId: number): boolean => {
-      if (gameState.hasWon) return false;
+      if (gameState.hasWon || gameState.hasLost) return false;
       return currentRoom?.connections.includes(roomId) ?? false;
     },
-    [currentRoom, gameState.hasWon]
+    [currentRoom, gameState.hasWon, gameState.hasLost]
   );
 
   const isRoomVisible = useCallback(
     (roomId: number): boolean => {
+      if (gameState.hasWon || gameState.hasLost) return true;
       if (gameState.visitedRoomIds.has(roomId)) return true;
       return currentRoom?.connections.includes(roomId) ?? false;
     },
-    [currentRoom, gameState.visitedRoomIds]
+    [currentRoom, gameState.visitedRoomIds, gameState.hasWon, gameState.hasLost]
   );
 
   const startPractice = useCallback(() => {
@@ -221,6 +227,7 @@ export function useGame(): UseGameReturn {
           visitedRoomIds: newVisited,
           moveCount: prev.moveCount + 1,
           hasWon: roomId === dungeon.treasureId,
+          hasLost: roomId === dungeon.dragonId,
         };
         if (!isPractice) {
           saveGameState(dateString, newState);
@@ -228,7 +235,7 @@ export function useGame(): UseGameReturn {
         return newState;
       });
     },
-    [canMoveTo, dungeon.treasureId, dateString, isPractice]
+    [canMoveTo, dungeon.treasureId, dungeon.dragonId, dateString, isPractice]
   );
 
   const resetGame = useCallback(() => {
