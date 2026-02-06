@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateClues, roomMatchesClue } from './clueGenerator';
-import { generateDungeon, calculateDistances } from './dungeonGenerator';
+import { generateDungeon, calculateDistances } from './index';
 import type { ClueCategory } from '../types';
 
 describe('generateClues', () => {

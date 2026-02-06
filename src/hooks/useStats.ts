@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { Stats, RatingCounts } from '../types';
-import { getTodayDateString } from '../utils/dungeonGenerator';
+import { getTodayDateString } from '../dungeon';
 import { getGunudRating } from '../utils/sharing';
 
 const STATS_KEY = 'gunud-stats';

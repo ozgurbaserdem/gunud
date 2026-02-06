@@ -5,7 +5,7 @@ import {
   calculatePar,
   areGridAdjacent,
   getPuzzleNumber,
-} from './dungeonGenerator';
+} from './index';
 import type { Room } from '../types';
 
 describe('areGridAdjacent', () => {

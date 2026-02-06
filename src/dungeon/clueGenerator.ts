@@ -1,5 +1,6 @@
 import type { Dungeon, Clue, ClueCategory, Room } from '../types';
-import { calculateDistances, createSeededRandom, dateToSeed } from './dungeonGenerator';
+import { calculateDistances } from './graphUtils';
+import { createSeededRandom, dateToSeed } from './seedRandom';
 
 export function generateClues(dungeon: Dungeon, dateString: string): Map<number, Clue> {
   const seed = dateToSeed(dateString + '-clues');
