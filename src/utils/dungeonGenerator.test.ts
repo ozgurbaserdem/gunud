@@ -130,6 +130,37 @@ describe('generateDungeon', () => {
       expect(dungeon.treasureId).not.toBe(dungeon.entranceId);
     });
 
+    it('dragon is not the entrance or treasure', () => {
+      for (const seed of testSeeds) {
+        const dungeon = generateDungeon(seed);
+        expect(dungeon.dragonId).not.toBe(dungeon.entranceId);
+        expect(dungeon.dragonId).not.toBe(dungeon.treasureId);
+      }
+    });
+
+    it('dragon does not block all paths to treasure', () => {
+      for (const seed of testSeeds) {
+        const dungeon = generateDungeon(seed);
+        // BFS from entrance to treasure, excluding dragon room
+        const visited = new Set<number>([dungeon.dragonId]);
+        const queue = [dungeon.entranceId];
+        visited.add(dungeon.entranceId);
+        let reachable = false;
+        while (queue.length > 0) {
+          const current = queue.shift()!;
+          if (current === dungeon.treasureId) { reachable = true; break; }
+          const room = dungeon.rooms.find(r => r.id === current)!;
+          for (const neighborId of room.connections) {
+            if (!visited.has(neighborId)) {
+              visited.add(neighborId);
+              queue.push(neighborId);
+            }
+          }
+        }
+        expect(reachable).toBe(true);
+      }
+    });
+
     it('entrance has at least 3 connections', () => {
       for (const seed of testSeeds) {
         const dungeon = generateDungeon(seed);

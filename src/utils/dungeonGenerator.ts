@@ -512,10 +512,48 @@ export function generateDungeon(dateString: string): Dungeon {
   // Add dead-end branches off the optimal path for misleading wrong turns
   addDeadEnds(rooms, entranceId, treasureRoom.id, random, usedPositions);
 
+  // Place dragon room near treasure's BFS depth (tempting wrong choice)
+  // Dragon must NOT block all paths to treasure (must be bypassable)
+  const dragonDistances = calculateDistances(rooms, entranceId);
+  const treasureDist = dragonDistances.get(treasureRoom.id) || 0;
+  const isBypassable = (candidateId: number): boolean => {
+    // BFS from entrance to treasure, excluding the candidate room
+    const visited = new Set<number>([candidateId]);
+    const queue = [entranceId];
+    visited.add(entranceId);
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      if (current === treasureRoom.id) return true;
+      const currentRoom = rooms.find(r => r.id === current)!;
+      for (const neighborId of currentRoom.connections) {
+        if (!visited.has(neighborId)) {
+          visited.add(neighborId);
+          queue.push(neighborId);
+        }
+      }
+    }
+    return false;
+  };
+  const dragonCandidatesNear = rooms.filter(r => {
+    if (r.id === entranceId || r.id === treasureRoom.id) return false;
+    if (!isBypassable(r.id)) return false;
+    const d = dragonDistances.get(r.id) || 0;
+    return d >= treasureDist - 1 && d <= treasureDist + 1;
+  });
+  const dragonCandidatesAny = dragonCandidatesNear.length > 0
+    ? dragonCandidatesNear
+    : rooms.filter(r => r.id !== entranceId && r.id !== treasureRoom.id && isBypassable(r.id));
+  // Fallback: if every room is a chokepoint, allow any non-entrance/non-treasure room
+  const dragonCandidates = dragonCandidatesAny.length > 0
+    ? dragonCandidatesAny
+    : rooms.filter(r => r.id !== entranceId && r.id !== treasureRoom.id);
+  const dragonRoom = dragonCandidates[Math.floor(random() * dragonCandidates.length)];
+
   return {
     rooms,
     entranceId,
     treasureId: treasureRoom.id,
+    dragonId: dragonRoom.id,
   };
 }
 

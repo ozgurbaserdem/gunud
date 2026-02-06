@@ -9,9 +9,10 @@ export interface Dungeon {
   rooms: Room[];
   entranceId: number;
   treasureId: number;
+  dragonId: number;
 }
 
-export type ClueCategory = 'parity' | 'spatial' | 'manhattan' | 'entrance';
+export type ClueCategory = 'exits' | 'spatial' | 'manhattan' | 'entrance';
 
 export interface Clue {
   category: ClueCategory;
@@ -26,6 +27,7 @@ export interface GameState {
   visitedRoomIds: Set<number>;
   moveCount: number;
   hasWon: boolean;
+  hasLost: boolean;
   clues: Map<number, Clue>; // roomId -> clue
 }
 
