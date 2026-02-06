@@ -167,10 +167,10 @@ describe('generateShareText', () => {
       expect(result.emojiGrid).toContain('\uD83D\uDEAA'); // door emoji
     });
 
-    it('marks treasure room with green square', () => {
+    it('hides treasure room as visited (spoiler-free)', () => {
       const visited = new Set([0, 1, 2, 3]);
       const result = generateShareText(1, 3, 3, visited, testDungeon);
-      expect(result.emojiGrid).toContain('\uD83D\uDFE9'); // green square
+      expect(result.emojiGrid).not.toContain('\uD83D\uDFE9'); // no green square (spoiler-free)
     });
 
     it('marks visited rooms with yellow square', () => {
@@ -179,11 +179,11 @@ describe('generateShareText', () => {
       expect(result.emojiGrid).toContain('\uD83D\uDFE8'); // yellow square
     });
 
-    it('marks unvisited rooms with white square', () => {
+    it('hides unvisited rooms as black square (spoiler-free)', () => {
       // Only visit rooms 0 and 3, leave 1 and 2 unvisited
       const visited = new Set([0, 3]);
       const result = generateShareText(1, 3, 3, visited, testDungeon);
-      expect(result.emojiGrid).toContain('\u2B1C'); // white square
+      expect(result.emojiGrid).not.toContain('\u2B1C'); // no white square (hidden)
     });
   });
 

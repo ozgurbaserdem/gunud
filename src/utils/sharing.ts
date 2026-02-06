@@ -41,7 +41,7 @@ gunud.vercel.app`;
 
 // Generate emoji grid representing dungeon layout
 function generateEmojiGrid(dungeon: Dungeon, visitedRoomIds: Set<number>): string {
-  const { rooms, entranceId, treasureId } = dungeon;
+  const { rooms, entranceId } = dungeon;
 
   // Find bounds
   const xs = rooms.map((r) => r.x);
@@ -63,14 +63,12 @@ function generateEmojiGrid(dungeon: Dungeon, visitedRoomIds: Set<number>): strin
     const x = room.x - minX;
     const y = room.y - minY;
 
-    if (room.id === treasureId) {
-      grid[y][x] = '🟩'; // Gem room
-    } else if (room.id === entranceId) {
+    if (room.id === entranceId) {
       grid[y][x] = '🚪'; // Entrance
     } else if (visitedRoomIds.has(room.id)) {
-      grid[y][x] = '🟨'; // Visited
+      grid[y][x] = '🟨'; // Visited (gem hidden among visited)
     } else {
-      grid[y][x] = '⬜'; // Unvisited
+      grid[y][x] = '⬛'; // Unvisited (hidden, same as empty)
     }
   }
 

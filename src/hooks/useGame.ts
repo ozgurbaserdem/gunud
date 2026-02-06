@@ -5,8 +5,8 @@ import {
   getTodayDateString,
   calculatePar,
   getPuzzleNumber,
-} from '../utils/dungeonGenerator';
-import { generateClues } from '../utils/clueGenerator';
+} from '../dungeon';
+import { generateClues } from '../dungeon/clueGenerator';
 
 const isDev = import.meta.env.DEV;
 const GAME_STATE_KEY = 'gunud-game-state';
