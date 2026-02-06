@@ -12,6 +12,7 @@ export function Game() {
     gameState, currentClue, par, puzzleNumber, isPractice,
     moveToRoom, canMoveTo, isRoomVisible, startPractice, tryAnother, backToDaily,
   } = useGame();
+  const { hasLost } = gameState;
 
   const { stats, recordWin, hasPlayedToday, averageMoves } = useStats();
 
@@ -102,7 +103,36 @@ export function Game() {
 
         {/* Game Info */}
         <div className="mt-6 text-center">
-          {gameState.hasWon ? (
+          {hasLost ? (
+            <div>
+              <p className="text-2xl font-bold text-[#ff4444] mb-2 win-text-reveal">🐉 The Dragon Got You!</p>
+              {isPractice ? (
+                <div className="flex gap-3 win-button-reveal">
+                  <button
+                    onClick={tryAnother}
+                    className="bg-[#ff4444] text-[#1a1a2e] px-6 py-2 rounded font-bold hover:bg-[#ff6666] transition-colors"
+                  >
+                    Try Another
+                  </button>
+                  <button
+                    onClick={backToDaily}
+                    className="border border-[#4a4a6a] text-[#a0a0b0] px-6 py-2 rounded font-bold hover:border-[#ffd700] hover:text-[#ffd700] transition-colors"
+                  >
+                    Back to Daily
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-1.5 win-button-reveal">
+                  <button
+                    onClick={startPractice}
+                    className="bg-[#ffd700] text-[#1a1a2e] px-6 py-2 rounded font-bold hover:bg-[#ffed4a] transition-colors"
+                  >
+                    Practice Mode
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : gameState.hasWon ? (
             <div>
               <p className="text-2xl font-bold text-[#ffd700] mb-2 win-text-reveal">🏺 Relic Found!</p>
               {isPractice ? (
