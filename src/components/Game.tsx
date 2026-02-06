@@ -159,7 +159,7 @@ export function Game() {
                   </button>
                   <button
                     onClick={startPractice}
-                    className="text-[#8888a0] text-sm hover:text-[#ffd700] transition-colors"
+                    className="text-[#8888a0] text-base hover:text-[#ffd700] transition-colors"
                   >
                     Practice Mode
                   </button>
