@@ -20,13 +20,23 @@ export function HowToPlay({ isOpen, onClose }: HowToPlayProps) {
       <div className="bg-[#2d2d44] rounded-lg p-6 max-w-md w-full pixel-border" onClick={e => e.stopPropagation()}>
         <h2 className="text-2xl font-bold text-[#ffd700] mb-4 text-center">How to Play</h2>
 
+        <div className="text-center mb-4 pb-4 border-b border-[#4a4a6a]/40">
+          <p className="text-lg font-bold text-[#ffd700]">⛏️  GUNUD  /ˈɡunʊd/</p>
+          <p className="text-xs text-[#a0a0b0] mt-1">
+            Khuzdul for &ldquo;to dig underground&rdquo; — from the secret tongue of the Dwarves.
+          </p>
+          <p className="text-sm text-[#e8e8f0] mt-2">
+            Delve into the mountain. Seek the gem hidden in the deep.
+          </p>
+        </div>
+
         <div className="space-y-4 text-[#e8e8f0]">
           <div className="flex items-start gap-3">
             <span className="text-2xl">🚪</span>
             <div>
-              <p className="font-bold">Enter the Dungeon</p>
+              <p className="font-bold">Enter the Mines</p>
               <p className="text-sm text-[#a0a0b0]">
-                You start at the entrance. Each room holds a clue about the treasure.
+                You start at the entrance. Each tunnel holds a clue about the gem.
               </p>
             </div>
           </div>
@@ -40,8 +50,8 @@ export function HowToPlay({ isOpen, onClose }: HowToPlayProps) {
               </p>
               <ul className="text-sm text-[#a0a0b0] space-y-1">
                 <li>📍 <span className="text-[#e8e8f0]">Direction</span> — left, right, above, or below</li>
-                <li>🚪 <span className="text-[#e8e8f0]">Path distance</span> — steps to the relic</li>
-                <li>🔗 <span className="text-[#e8e8f0]">Exits</span> — how many exits the relic room has</li>
+                <li>🚪 <span className="text-[#e8e8f0]">Path distance</span> — steps to the gem</li>
+                <li>🔗 <span className="text-[#e8e8f0]">Exits</span> — how many exits the gem chamber has</li>
                 <li>📏 <span className="text-[#e8e8f0]">Grid distance</span> — grid squares away</li>
               </ul>
             </div>
@@ -53,17 +63,17 @@ export function HowToPlay({ isOpen, onClose }: HowToPlayProps) {
               <p className="font-bold">Deduce</p>
               <p className="text-sm text-[#a0a0b0]">
                 Combine clues to eliminate rooms. When only one room fits all the
-                clues — that's where the treasure is!
+                clues — that's where the gem is!
               </p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <span className="text-2xl">🏺</span>
+            <span className="text-2xl">💎</span>
             <div>
-              <p className="font-bold">Find the Relic</p>
+              <p className="font-bold">Find the Gem</p>
               <p className="text-sm text-[#a0a0b0]">
-                Navigate to the room you've deduced. Fewer moves = better rating!
+                Navigate to the chamber you've deduced. Fewer moves = better rating!
               </p>
             </div>
           </div>
