@@ -9,12 +9,12 @@ export function generateClues(dungeon: Dungeon, dateString: string): Map<number,
   const distFromEntrance = calculateDistances(rooms, entranceId);
   const distFromTreasure = calculateDistances(rooms, treasureId);
 
-  // Sort non-treasure rooms by distance from entrance (closest first)
+  // Sort non-treasure, non-dragon rooms by distance from entrance (closest first)
   const clueRooms = rooms
-    .filter(r => r.id !== treasureId)
+    .filter(r => r.id !== treasureId && r.id !== dungeon.dragonId)
     .sort((a, b) => (distFromEntrance.get(a.id) || 0) - (distFromEntrance.get(b.id) || 0));
 
-  const categories: ClueCategory[] = ['parity', 'spatial', 'manhattan', 'entrance'];
+  const categories: ClueCategory[] = ['exits', 'spatial', 'manhattan', 'entrance'];
 
   // Retry loop: reshuffle assignments until clues uniquely identify treasure
   const maxAttempts = 10;
@@ -77,11 +77,9 @@ export function roomMatchesClue(
   rooms: Room[]
 ): boolean {
   switch (clue.category) {
-    case 'parity': {
-      const isEven = clue.compact === 'Even dist.';
-      const distFromCandidate = calculateDistances(rooms, candidate.id);
-      const d = distFromCandidate.get(clueRoom.id) || 0;
-      return (d % 2 === 0) === isEven;
+    case 'exits': {
+      const n = parseInt(clue.compact);
+      return candidate.connections.length === n;
     }
     case 'spatial': {
       const dx = candidate.x - clueRoom.x;
@@ -132,14 +130,13 @@ function buildClue(
   random: () => number
 ): Clue {
   switch (category) {
-    case 'parity': {
-      const d = distFromTreasure.get(room.id) || 0;
-      const isEven = d % 2 === 0;
+    case 'exits': {
+      const exitCount = treasureRoom.connections.length;
       return {
-        category: 'parity',
-        text: `The relic is an ${isEven ? 'even' : 'odd'} number of steps away`,
-        compact: isEven ? 'Even dist.' : 'Odd dist.',
-        icon: '\u2696\uFE0F',
+        category: 'exits',
+        text: `The relic room has ${exitCount} exit${exitCount !== 1 ? 's' : ''}`,
+        compact: `${exitCount} exit${exitCount !== 1 ? 's' : ''}`,
+        icon: '\u{1F517}',
       };
     }
     case 'spatial': {
@@ -151,9 +148,9 @@ function buildClue(
       const manhattan = Math.abs(treasureRoom.x - room.x) + Math.abs(treasureRoom.y - room.y);
       return {
         category: 'manhattan',
-        text: `The relic is ${manhattan} square${manhattan !== 1 ? 's' : ''} away on the map`,
+        text: `The relic is ${manhattan} grid square${manhattan !== 1 ? 's' : ''} away`,
         compact: `${manhattan} sq.`,
-        icon: '\u{1F4D0}',
+        icon: '\u{1F4CF}',
       };
     }
     case 'entrance': {
