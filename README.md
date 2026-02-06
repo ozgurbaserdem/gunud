@@ -1,10 +1,10 @@
 # Gunud
 
-**⛏️ /ˈɡunʊd/ — Khuzdul for "to dig underground"**
+**/ˈɡunʊd/**
 
 A daily dungeon-crawling puzzle game inspired by the secret tongue of the Dwarves. Delve into the mountain, collect clues, and deduce where the hidden gem lies — all in under a few minutes, no login required.
 
-> Built for the [Claude Community Hackathon v0.1.0](https://claude.ai) — *"A browser-based game with a viral hook."*
+> Built for the [Claude Community Hackathon v0.1.0](https://claudecode.community/) — *"A browser-based game with a viral hook."*
 
 ## Play
 

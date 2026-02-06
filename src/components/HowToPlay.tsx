@@ -21,7 +21,7 @@ export function HowToPlay({ isOpen, onClose }: HowToPlayProps) {
         <h2 className="text-2xl font-bold text-[#ffd700] mb-4 text-center">How to Play</h2>
 
         <div className="text-center mb-4 pb-4 border-b border-[#4a4a6a]/40">
-          <p className="text-lg font-bold text-[#ffd700]">⛏️  GUNUD  /ˈɡunʊd/</p>
+          <p className="text-lg font-bold text-[#ffd700]">/ˈɡunʊd/</p>
           <p className="text-xs text-[#a0a0b0] mt-1">
             Khuzdul for &ldquo;to dig underground&rdquo; — from the secret tongue of the Dwarves.
           </p>

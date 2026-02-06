@@ -75,7 +75,7 @@ export function Game() {
               className="text-2xl font-bold text-[#ffd700] tracking-[0.15em]"
               style={{ textShadow: '0 0 24px rgba(255,215,0,0.25)' }}
             >
-              GUNUD
+              /ˈɡunʊd/
             </h1>
             <p className="text-[10px] text-[#6a6a8a] tracking-[0.25em] mt-0.5">
               {isPractice ? 'PRACTICE' : `PUZZLE #${puzzleNumber}`}
