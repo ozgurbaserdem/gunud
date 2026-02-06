@@ -7,7 +7,7 @@ describe('getGunudRating', () => {
     it('returns S grade when moves < par (under par)', () => {
       const rating = getGunudRating(3, 5);
       expect(rating.grade).toBe('S');
-      expect(rating.name).toBe('Silent Steps');
+      expect(rating.name).toBe('Mithril Vein');
     });
 
     it('returns S grade when 1 under par', () => {
@@ -18,13 +18,13 @@ describe('getGunudRating', () => {
     it('returns A grade when moves === par (exactly par)', () => {
       const rating = getGunudRating(5, 5);
       expect(rating.grade).toBe('A');
-      expect(rating.name).toBe('Swift Delve');
+      expect(rating.name).toBe('Gold Strike');
     });
 
     it('returns B grade when 1 over par', () => {
       const rating = getGunudRating(6, 5);
       expect(rating.grade).toBe('B');
-      expect(rating.name).toBe('Steady Delve');
+      expect(rating.name).toBe('Iron Seam');
     });
 
     it('returns B grade when 2 over par', () => {
@@ -35,7 +35,7 @@ describe('getGunudRating', () => {
     it('returns C grade when 3 over par', () => {
       const rating = getGunudRating(8, 5);
       expect(rating.grade).toBe('C');
-      expect(rating.name).toBe('Rough Delve');
+      expect(rating.name).toBe('Rough Tunnel');
     });
 
     it('returns C grade when 4 over par', () => {
@@ -46,7 +46,7 @@ describe('getGunudRating', () => {
     it('returns D grade when 5 over par', () => {
       const rating = getGunudRating(10, 5);
       expect(rating.grade).toBe('D');
-      expect(rating.name).toBe('Lost Delver');
+      expect(rating.name).toBe('Cave-in');
     });
 
     it('returns D grade when far over par', () => {
@@ -129,7 +129,7 @@ describe('generateShareText', () => {
 
   it('includes rating line with grade and name', () => {
     const result = generateShareText(42, 5, 5, new Set([0, 1, 2, 3]), testDungeon);
-    expect(result.text).toContain('Rating: A - Swift Delve');
+    expect(result.text).toContain('Rating: A - Gold Strike');
   });
 
   it('includes moves and par in stats line', () => {
@@ -190,17 +190,17 @@ describe('generateShareText', () => {
   describe('rating in share text matches getGunudRating', () => {
     it('S-rank text when under par', () => {
       const result = generateShareText(1, 3, 5, new Set([0, 1, 2, 3]), testDungeon);
-      expect(result.text).toContain('Rating: S - Silent Steps');
+      expect(result.text).toContain('Rating: S - Mithril Vein');
     });
 
     it('B-rank text when 1-2 over par', () => {
       const result = generateShareText(1, 6, 5, new Set([0, 1, 2, 3]), testDungeon);
-      expect(result.text).toContain('Rating: B - Steady Delve');
+      expect(result.text).toContain('Rating: B - Iron Seam');
     });
 
     it('D-rank text when far over par', () => {
       const result = generateShareText(1, 15, 5, new Set([0, 1, 2, 3]), testDungeon);
-      expect(result.text).toContain('Rating: D - Lost Delver');
+      expect(result.text).toContain('Rating: D - Cave-in');
     });
   });
 });

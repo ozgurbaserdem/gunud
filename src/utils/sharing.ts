@@ -7,11 +7,11 @@ export interface ShareResult {
 
 export function getGunudRating(moves: number, par: number): GunudRating {
   const diff = moves - par;
-  if (diff < 0) return { grade: 'S', name: 'Silent Steps', emoji: '\u2728' };
-  if (diff === 0) return { grade: 'A', name: 'Swift Delve', emoji: '\u26A1' };
-  if (diff <= 2) return { grade: 'B', name: 'Steady Delve', emoji: '\uD83D\uDD2E' };
-  if (diff <= 4) return { grade: 'C', name: 'Rough Delve', emoji: '\uD83D\uDD6F\uFE0F' };
-  return { grade: 'D', name: 'Lost Delver', emoji: '\uD83D\uDC80' };
+  if (diff < 0) return { grade: 'S', name: 'Mithril Vein', emoji: '\u2728' };
+  if (diff === 0) return { grade: 'A', name: 'Gold Strike', emoji: '\u26A1' };
+  if (diff <= 2) return { grade: 'B', name: 'Iron Seam', emoji: '\u26CF\uFE0F' };
+  if (diff <= 4) return { grade: 'C', name: 'Rough Tunnel', emoji: '\uD83D\uDD6F\uFE0F' };
+  return { grade: 'D', name: 'Cave-in', emoji: '\uD83D\uDC80' };
 }
 
 // Generate share text with emoji grid
@@ -64,7 +64,7 @@ function generateEmojiGrid(dungeon: Dungeon, visitedRoomIds: Set<number>): strin
     const y = room.y - minY;
 
     if (room.id === treasureId) {
-      grid[y][x] = '🟩'; // Relic room
+      grid[y][x] = '🟩'; // Gem room
     } else if (room.id === entranceId) {
       grid[y][x] = '🚪'; // Entrance
     } else if (visitedRoomIds.has(room.id)) {
