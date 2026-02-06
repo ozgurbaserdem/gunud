@@ -112,14 +112,14 @@ function buildSpatialClue(dx: number, dy: number, useX: boolean): Clue {
   const icon = '\u{1F4CD}';
 
   if (useX) {
-    if (dx > 0) return { category: 'spatial', text: 'The treasure is to the right of here', compact: '\u2192 Right', icon };
-    if (dx < 0) return { category: 'spatial', text: 'The treasure is to the left of here', compact: '\u2190 Left', icon };
-    return { category: 'spatial', text: 'The treasure is in the same column', compact: '| Same col', icon };
+    if (dx > 0) return { category: 'spatial', text: 'The gem is to the right of here', compact: '\u2192 Right', icon };
+    if (dx < 0) return { category: 'spatial', text: 'The gem is to the left of here', compact: '\u2190 Left', icon };
+    return { category: 'spatial', text: 'The gem is in the same column', compact: '| Same col', icon };
   }
 
-  if (dy > 0) return { category: 'spatial', text: 'The treasure is below here', compact: '\u2193 Below', icon };
-  if (dy < 0) return { category: 'spatial', text: 'The treasure is above here', compact: '\u2191 Above', icon };
-  return { category: 'spatial', text: 'The treasure is in the same row', compact: '\u2014 Same row', icon };
+  if (dy > 0) return { category: 'spatial', text: 'The gem is below here', compact: '\u2193 Below', icon };
+  if (dy < 0) return { category: 'spatial', text: 'The gem is above here', compact: '\u2191 Above', icon };
+  return { category: 'spatial', text: 'The gem is in the same row', compact: '\u2014 Same row', icon };
 }
 
 function buildClue(
@@ -134,7 +134,7 @@ function buildClue(
       const exitCount = treasureRoom.connections.length;
       return {
         category: 'exits',
-        text: `The relic room has ${exitCount} exit${exitCount !== 1 ? 's' : ''}`,
+        text: `The gem chamber has ${exitCount} exit${exitCount !== 1 ? 's' : ''}`,
         compact: `${exitCount} exit${exitCount !== 1 ? 's' : ''}`,
         icon: '\u{1F517}',
       };
@@ -148,7 +148,7 @@ function buildClue(
       const manhattan = Math.abs(treasureRoom.x - room.x) + Math.abs(treasureRoom.y - room.y);
       return {
         category: 'manhattan',
-        text: `The relic is ${manhattan} grid square${manhattan !== 1 ? 's' : ''} away`,
+        text: `The gem is ${manhattan} grid square${manhattan !== 1 ? 's' : ''} away`,
         compact: `${manhattan} sq.`,
         icon: '\u{1F4CF}',
       };
@@ -157,7 +157,7 @@ function buildClue(
       const d = distFromTreasure.get(room.id) || 0;
       return {
         category: 'entrance',
-        text: `The treasure is ${d} steps from here`,
+        text: `The gem is ${d} steps from here`,
         compact: `${d} steps`,
         icon: '\u{1F6AA}',
       };
