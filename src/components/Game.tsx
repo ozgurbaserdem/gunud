@@ -134,7 +134,7 @@ export function Game() {
             </div>
           ) : gameState.hasWon ? (
             <div>
-              <p className="text-2xl font-bold text-[#ffd700] mb-2 win-text-reveal">🏺 Relic Found!</p>
+              <p className="text-2xl font-bold text-[#ffd700] mb-2 win-text-reveal">💎 Gem Found!</p>
               {isPractice ? (
                 <div className="flex gap-3 win-button-reveal">
                   <button
@@ -194,7 +194,7 @@ export function Game() {
                 </p>
               )}
 
-              <p className="text-sm text-[#a0a0b0]">Collect clues to find the relic</p>
+              <p className="text-sm text-[#a0a0b0]">Collect clues to find the gem</p>
             </>
           )}
         </div>

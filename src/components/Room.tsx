@@ -110,7 +110,7 @@ export function Room({
             </text>
           ) : isTreasure && (isCurrent || gameOver) ? (
             <text x={0} y={8} textAnchor="middle" fontSize={32 * scale} fill="#ffd700" className="torch-glow">
-              🏺
+              💎
             </text>
           ) : isCurrent && clue ? (
             <>
@@ -123,6 +123,16 @@ export function Room({
               </text>
             </>
           ) : isVisited && clue ? (
+            <>
+              <text x={0} y={-2 * scale} textAnchor="middle" fontSize={16 * scale}>
+                {clue.icon}
+              </text>
+              <text x={0} y={16 * scale} textAnchor="middle" fontSize={9 * scale}
+                fontFamily="'Courier New', monospace" fill="#707080">
+                {clue.compact}
+              </text>
+            </>
+          ) : clue && gameOver ? (
             <>
               <text x={0} y={-2 * scale} textAnchor="middle" fontSize={16 * scale}>
                 {clue.icon}
