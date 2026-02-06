@@ -1,8 +1,8 @@
 # Gunud
 
-**"Delve deeper, think smarter"**
+**⛏️ /ˈɡunʊd/ — Khuzdul for "to dig underground"**
 
-A daily dungeon-crawling puzzle game where you explore rooms, collect clues, and deduce where the hidden relic lies — all in under a few minutes, no login required.
+A daily dungeon-crawling puzzle game inspired by the secret tongue of the Dwarves. Delve into the mountain, collect clues, and deduce where the hidden gem lies — all in under a few minutes, no login required.
 
 > Built for the [Claude Community Hackathon v0.1.0](https://claude.ai) — *"A browser-based game with a viral hook."*
 
@@ -12,17 +12,19 @@ A daily dungeon-crawling puzzle game where you explore rooms, collect clues, and
 
 ## How It Works
 
-1. **Enter the Dungeon** — You start at the entrance. Each room holds a clue about the relic's location.
-2. **Collect Clues** — Clues reveal properties of the relic room: number of exits, direction, adjacency, or distance from entrance.
+1. **Enter the Mines** — You start at the entrance. Each tunnel holds a clue about the gem's location.
+2. **Collect Clues** — Clues reveal properties of the gem chamber: direction, path distance, number of exits, or grid distance.
 3. **Deduce** — Combine clues to eliminate rooms until only one candidate remains.
-4. **Find the Relic** — Navigate to the room you've deduced. Fewer moves = better rating.
-5. **Share** — Compare your result with friends. Same dungeon for everyone, every day.
+4. **Find the Gem** 💎 — Navigate to the chamber you've deduced. Fewer moves = better rating.
+5. **Beware the Dragon** 🐉 — One room hides a dragon. Step on it and your quest ends!
+6. **Share** — Compare your result with friends. Same dungeon for everyone, every day.
 
 ## Features
 
 - **Daily seeded puzzles** — deterministic generation ensures the same dungeon for all players each day
-- **Four clue types** — connection, spatial, relational, and entrance-based hints for varied deduction
-- **Letter grade ratings** (S/A/B/C/D) with par-based scoring
+- **Four clue types** — direction, path distance, exit count, and grid distance for varied deduction
+- **Dragon hazard** 🐉 — one room hides a dragon that ends your quest instantly
+- **Dwarven-themed ratings** with par-based scoring
 - **Stats tracking** — games played, win streaks, move history, rating distribution
 - **Shareable results** with a spoiler-free emoji grid
 - **No backend** — runs entirely client-side with localStorage persistence
