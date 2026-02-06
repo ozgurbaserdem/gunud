@@ -79,7 +79,7 @@ export function Room({
         rx={4} ry={4}
         fill={fillColor} stroke={strokeColor}
         strokeWidth={strokeWidth} opacity={opacity}
-        style={{ transition: 'fill 0.5s ease-out' }}
+        style={{ transition: 'fill 0.5s ease-out, opacity 0.5s ease-out, stroke 0.5s ease-out' }}
       />
 
       <defs>

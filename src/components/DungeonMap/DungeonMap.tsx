@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import type { GameState } from '../../types';
 import { Room } from './Room';
 import { Door } from './Door';
+import { useAnimatedViewBox } from '../../hooks/useAnimatedViewBox';
 
 interface DungeonMapProps {
   gameState: GameState;
@@ -77,14 +78,19 @@ export function DungeonMap({
 
   const aspectRatio = width / height;
 
+  const svgRef = useRef<SVGSVGElement>(null);
+  const gRef = useRef<SVGGElement>(null);
+  useAnimatedViewBox(svgRef, gRef, { width, height, offsetX, offsetY });
+
   return (
     <div className="w-full flex justify-center">
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${width} ${height}`}
         className="w-full max-w-[600px]"
         style={{ aspectRatio, maxHeight: '70vh' }}
       >
-        <g transform={`translate(${offsetX}, ${offsetY})`}>
+        <g ref={gRef} transform={`translate(${offsetX}, ${offsetY})`}>
           {doors.map(({ room1Id, room2Id }) => {
             const room1 = dungeon.rooms.find((r) => r.id === room1Id)!;
             const room2 = dungeon.rooms.find((r) => r.id === room2Id)!;
